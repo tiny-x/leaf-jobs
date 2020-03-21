@@ -1,0 +1,7 @@
+logging:
+  config: classpath:logback-spring.xml
+  dir: /data/logs/leaf-jobs
+  level:
+    root: info
+    com.leaf: info
+    org.springframework: info

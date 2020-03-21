@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>leaf-jobs</artifactId>
+        <groupId>com.leaf.jobs</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>leaf-jobs-common</artifactId>
+
+    <dependencies>
+        <!-- leaf-rpc -->
+        <dependency>
+            <groupId>com.leaf.rpc</groupId>
+            <artifactId>rpc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leaf.rpc</groupId>
+            <artifactId>register-zookeeper</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leaf.rpc</groupId>
+            <artifactId>serialization-protostuff</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leaf.rpc</groupId>
+            <artifactId>spring-support</artifactId>
+        </dependency>
+        <!-- leaf-rpc -->
+    </dependencies>
+
+</project>

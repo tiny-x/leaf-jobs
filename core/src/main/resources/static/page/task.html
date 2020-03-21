@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>任务管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">任务组</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="taskGroup" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">服务名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="taskServiceName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">任务名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="taskName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                            <button type="reset" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 清 空
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加任务</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除任务
+                </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="task" lay-filter="currentTableFilter"></table>
+
+
+    </div>
+</div>
+
+<script src="../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#task',
+            url: '/task/selectTask',
+            toolbar: '#toolbar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox", fixed: "left"},
+                {field: 'taskId', title: '任务ID'},
+                {field: 'taskGroup', title: '任务组', sort: true, width: 80},
+                {field: 'taskServiceName', title: '服务名称', width: 150},
+                {field: 'taskMethodName', title: '方法名称', width: 80},
+                {field: 'taskName', title: '任务名称'},
+                {field: 'cron', title: 'CRON'},
+                {
+                    field: 'taskStatus', title: '任务状态', width: 100,
+                    templet: function (data) {
+                        return '<span name="taskStatus">' + data.taskStatus + '</span>'
+                    }
+                },
+                {field: 'timeOut', title: '超时时间', width: 100},
+                {field: 'onlineAddress', title: '在线机器'},
+                {
+                    title: '操作', fixed: "right", minWidth: 250,
+                    templet: function (data) {
+                        var opt = '<span><a id="btn-run" class="layui-btn layui-btn-xs layui-btn-normal" lay-event="run">运行</a>' +
+                            '<a id="btn-pause" class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pause">暂停</a>' +
+                            '<a class="layui-btn layui-btn-xs layui-btn-normal layui-btn-radius" lay-event="trigger">触发</a>' +
+                            '<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="run">日志</a>' +
+                            '<a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>' +
+                            '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a></span>';
+
+                        if (data.taskStatus == 'RUN') {
+                            return $(opt).find("#btn-run").attr("style", "display:none;").parents("span").html();
+                        } else if (data.taskStatus == 'PAUSE') {
+                            return $(opt).find("#btn-pause").attr("style", "display:none;").parents("span").html();
+                        }
+                    }
+                }
+            ]],
+            limits: [10, 20, 50, 100],
+            limit: 10,
+            page: true
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('task', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    taskGroup: data.field.taskGroup,
+                    taskServiceName: data.field.taskServiceName,
+                    taskName: data.field.taskName,
+                }
+                , param: '1'
+            }, 'data');
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/page/task/task-add.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('task')
+                    , data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            console.log(obj);
+            var data = obj.data;
+            if (obj.event === 'edit') {
+
+                var index = layer.open({
+                    title: '编辑任务',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/page/table/edit.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('确认删除任务吗？', function (index) {
+                    obj.del();
+                    $.ajax({
+                        url: '/task/delete',
+                        type: 'post',
+                        data: {"taskId": data.taskId},
+                        dataType: "json",
+                        success: function (ret) {
+                            if (ret.code != 0) {
+                                layer.msg(ret.tips, {
+                                    time: 2000, //20s后自动关闭
+                                    btn: ['关闭']
+                                });
+                            }
+                        },
+                        error: function (xhr, textstatus, thrown) {
+                            layer.msg('delete task error!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'trigger') {
+                layer.confirm('执行一次任务？', function (index) {
+                    $.ajax({
+                        url: '/task/trigger',
+                        type: 'post',
+                        data: {
+                            "id": data.taskId,
+                            "group": data.taskGroup
+                        },
+                        dataType: "json",
+                        success: function (ret) {
+                            if (ret.code == 0) {
+                                layer.msg('执行成功', {time: 3000, btn: ['关闭']});
+                            } else {
+                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                            }
+                        },
+                        error: function (xhr, textstatus, thrown) {
+                            layer.msg('delete task error!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'run') {
+                layer.confirm('运行任务？', function (index) {
+                    $.ajax({
+                        url: '/task/updateJobStatus',
+                        type: 'post',
+                        data: {
+                            "id": data.taskId,
+                            "jobStatus": "RUN",
+                            "group": data.taskGroup
+                        },
+                        dataType: "json",
+                        success: function (ret) {
+                            $(obj.tr).find("#btn-run").attr("style", "display:none;");
+                            $(obj.tr).find("#btn-pause").attr("style", "");
+                            $(obj.tr).find("span[name='taskStatus']").text("RUN");
+                            if (ret.code == 0) {
+                                layer.msg('运行成功', {time: 3000, btn: ['关闭']});
+                            } else {
+                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                            }
+                        },
+                        error: function (xhr, textstatus, thrown) {
+                            layer.msg('run task error!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'pause') {
+                layer.confirm('暂停任务？', function (index) {
+                    $.ajax({
+                        url: '/task/updateJobStatus',
+                        type: 'post',
+                        data: {
+                            "id": data.taskId,
+                            "jobStatus": "PAUSE",
+                            "group": data.taskGroup
+                        },
+                        dataType: "json",
+                        success: function (ret) {
+                            $(obj.tr).find("#btn-pause").attr("style", "display:none;");
+                            $(obj.tr).find("#btn-run").attr("style", "");
+                            $(obj.tr).find("span[name='taskStatus']").text("PAUSE");
+                            if (ret.code == 0) {
+                                layer.msg('暂停成功', {time: 3000, btn: ['关闭']});
+                            } else {
+                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                            }
+                        },
+                        error: function (xhr, textstatus, thrown) {
+                            layer.msg('pause task error!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

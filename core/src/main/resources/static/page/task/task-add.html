@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>任务添加</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务</label>
+        <div class="layui-input-block">
+            <input type="text" name="" autocomplete="off" class="layui-input" id="taskSearch">
+            <input type="hidden" name="group" id="group">
+            <input type="hidden" name="serviceName" id="serviceName">
+            <input type="hidden" name="methodName" id="methodName">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务参数</label>
+        <div class="layui-input-block">
+            <input type="text" name="params" lay-verify="required" value="" class="layui-input" placeholder="a,b">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="taskName" lay-verify="required" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">cron</label>
+        <div class="layui-input-block">
+            <input type="text" name="cron" lay-verify="required" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">超时时间</label>
+        <div class="layui-input-block">
+            <input type="number" name="timeMillis" lay-verify="required" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">负责人</label>
+        <div class="layui-input-block">
+            <input type="text" name="principal" lay-verify="required" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">预警邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" name="riskEMail" placeholder="请输入邮箱" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">备注信息</label>
+        <div class="layui-input-block">
+            <textarea name="remark" class="layui-textarea" placeholder="请输入备注信息"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveBtn">保存</button>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['table', 'form', 'tableSelect'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            tableSelect = layui.tableSelect;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data);
+
+            $.ajax({
+                url: '/task/addJob',
+                type: 'post',
+                data: {
+                    "jobStatus": "RUN",
+                    "group": data.field.group,
+                    "serviceName": data.field.serviceName,
+                    "methodName": data.field.methodName,
+                    "params": data.field.params,
+                    "taskName": data.field.taskName,
+                    "cron": data.field.cron,
+                    "timeMillis": data.field.timeMillis,
+                    "riskEMail": data.field.riskEMail,
+                    "principal": data.field.principal,
+                    "remark": data.field.remark,
+                },
+                dataType: "json",
+                success: function (ret) {
+                    if (ret.code != 0) {
+                        layer.msg(ret.tips, {
+                            time: 2000,
+                            btn: ['关闭']
+                        });
+                        var iframeIndex = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(iframeIndex);
+                    }
+                },
+                error: function (xhr, textstatus, thrown) {
+                    layer.msg('添加任务失败：' + textstatus);
+                }
+            });
+
+            return false;
+        });
+
+        tableSelect.render({
+            elem: '#taskSearch',
+            checkedKey: 'id',
+            height: '400',
+            width: '900',
+            searchType: 'more',
+            searchList: [
+                {searchKey: 'group', searchPlaceholder: '搜索服务组'},
+                {searchKey: 'serviceName', searchPlaceholder: '搜索服务名称'},
+            ],
+            table: {
+                url: '/task/services',
+                cols: [[
+                    {type: 'radio'},
+                    {field: 'group', title: '服务组'},
+                    {field: 'serviceName', title: '服务名称'},
+                    {field: 'method', title: '方法名称 '}
+                ]],
+                page: false
+            },
+            done: function (elem, data) {
+                layui.each(data.data, function (index, item) {
+                    $("#taskSearch").val("[" + item.group + "] - " + item.serviceName + "#" + item.method);
+                    $("#group").val(item.group);
+                    $("#serviceName").val(item.serviceName);
+                    $("#methodName").val(item.method);
+                });
+            }
+        })
+    });
+</script>
+</body>
+</html>

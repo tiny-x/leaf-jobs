@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leaf.jobs.dao.mapper.TaskInvokeRecordMapper">
+
+    <select id="selectTaskInvokeRecord" parameterType="com.leaf.jobs.dao.model.TaskInvokeRecord"
+            resultType="com.leaf.jobs.dao.model.TaskInvokeRecord">
+        select
+        a.RECORD_ID recordId,
+        a.TASK_ID taskId,
+        b.TASK_GROUP taskGroup,
+        b.TASK_SERVICE_NAME taskServiceName,
+        b.TASK_METHOD_NAME taskMethodName,
+        b.TASK_NAME taskName,
+        a.INVOKE_DATE invokeDate,
+        a.COMPLETE_DATE completeDate,
+        a.INVOKE_RESULT invokeResult
+        from t_task_invoke_record a
+        inner join t_task b
+        on a.TASK_ID = b.TASK_ID
+        <where>
+            <if test="taskGroup != '' and taskGroup != null">
+                and b.TASK_GROUP = #{taskGroup}
+            </if>
+            <if test="taskServiceName != '' and taskServiceName != null">
+                and b.TASK_SERVICE_NAME = #{taskServiceName}
+            </if>
+            <if test="taskMethodName != '' and taskMethodName != null">
+                and b.TASK_METHOD_NAME = #{taskMethodName}
+            </if>
+            <if test="taskName != '' and taskName != null">
+                and b.TASK_NAME = #{taskName}
+            </if>
+        </where>
+    </select>
+
+    <select id="dayOfInvokeCount" resultType="com.leaf.jobs.dao.model.TaskInvokeRecord">
+        select DATE(INVOKE_DATE)                                     invokeDate,
+               count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), null, 1)) successCount,
+               count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), 1, null)) errorCount,
+               count(*) `count`
+        from t_task_invoke_record
+        group by DATE(INVOKE_DATE);
+    </select>
+
+    <select id="selectErrorCount" resultType="int">
+        select
+            count(*) `errorCount`
+        from t_task_invoke_record
+        where INVOKE_RESULT in ('调度失败', '执行失败');
+    </select>
+
+</mapper>
