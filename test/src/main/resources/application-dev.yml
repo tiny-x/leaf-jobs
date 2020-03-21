@@ -1,0 +1,5 @@
+leaf:
+    jobs:
+      registerAddress: zookeeper.dev.xianglin.com:2181
+      systemName: rjb
+      port: 9000

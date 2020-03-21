@@ -1,7 +1,7 @@
 package com.leaf.jobs.quartz.support.impl;
 
 import com.leaf.jobs.model.JobVo;
-import com.leaf.jobs.model.exception.JobsException;
+import com.leaf.jobs.exception.JobsException;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;

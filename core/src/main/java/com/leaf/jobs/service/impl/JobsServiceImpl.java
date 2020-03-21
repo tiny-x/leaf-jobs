@@ -12,7 +12,7 @@ import com.leaf.jobs.model.JobStatus;
 import com.leaf.jobs.model.JobVo;
 import com.leaf.jobs.model.RegisterServiceVo;
 import com.leaf.jobs.model.Response;
-import com.leaf.jobs.model.id.generate.SnowflakeIdWorker;
+import com.leaf.jobs.generate.SnowflakeIdWorker;
 import com.leaf.jobs.quartz.support.impl.ScheduleService;
 import com.leaf.jobs.service.JobsService;
 import com.leaf.register.api.model.RegisterMeta;

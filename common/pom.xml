@@ -33,6 +33,11 @@
             <artifactId>spring-support</artifactId>
         </dependency>
         <!-- leaf-rpc -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

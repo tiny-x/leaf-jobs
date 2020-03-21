@@ -1,4 +1,4 @@
-package com.leaf.jobs.model.exception;
+package com.leaf.jobs.exception;
 
 /**
  * JobsException

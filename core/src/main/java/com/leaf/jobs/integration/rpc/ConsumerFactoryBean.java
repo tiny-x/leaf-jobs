@@ -8,6 +8,7 @@ import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.DefaultConsumer;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,11 +16,17 @@ public class ConsumerFactoryBean implements FactoryBean<Consumer>, InitializingB
 
     private Consumer consumer;
 
+    @Value("${leaf.jobs.systemName}")
+    private String application;
+
+    @Value("${leaf.jobs.registerAddress}")
+    private String registerAddress;
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        Consumer consumer = new DefaultConsumer("jobs", RegisterType.ZOOKEEPER);
+        Consumer consumer = new DefaultConsumer(application, RegisterType.ZOOKEEPER);
 
-        consumer.connectToRegistryServer("zookeeper.dev.xianglin.com:2181");
+        consumer.connectToRegistryServer(registerAddress);
         consumer.subscribeGroup((registerMeta, notifyEvent) -> {
             ConcurrentSet<RegisterMeta> registerMetas = new ConcurrentSet<>();
             ConcurrentSet<RegisterMeta> oldRegisterMetas = JobsContext.getGroupMap().putIfAbsent(registerMeta.getServiceMeta().getGroup(), registerMetas);

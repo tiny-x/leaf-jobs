@@ -41,8 +41,7 @@
                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit
                                     lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
                             </button>
-                            <button type="reset" class="layui-btn layui-btn-primary" lay-submit
-                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 清 空
+                            <button type="reset" class="layui-btn layui-btn-primary" ><i class="layui-icon"></i> 清 空
                             </button>
                         </div>
                     </div>
@@ -102,7 +101,7 @@
                         var opt = '<span><a id="btn-run" class="layui-btn layui-btn-xs layui-btn-normal" lay-event="run">运行</a>' +
                             '<a id="btn-pause" class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pause">暂停</a>' +
                             '<a class="layui-btn layui-btn-xs layui-btn-normal layui-btn-radius" lay-event="trigger">触发</a>' +
-                            '<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="run">日志</a>' +
+                            '<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="log">日志</a>' +
                             '<a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>' +
                             '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a></span>';
 
@@ -283,6 +282,8 @@
                     });
                     layer.close(index);
                 });
+            } else if (obj.event === 'log') {
+                layer.msg('未开发', {time: 3000, btn: ['关闭']});
             }
         });
 

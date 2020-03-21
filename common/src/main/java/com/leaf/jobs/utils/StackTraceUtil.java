@@ -1,4 +1,4 @@
-package com.leaf.jobs.model.utils;
+package com.leaf.jobs.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

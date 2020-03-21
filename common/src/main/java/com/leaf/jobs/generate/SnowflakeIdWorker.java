@@ -1,4 +1,4 @@
-package com.leaf.jobs.model.id.generate;
+package com.leaf.jobs.generate;
 
 /**
  * Twitter_Snowflake<br>

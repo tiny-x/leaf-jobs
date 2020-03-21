@@ -1,7 +1,7 @@
 package com.leaf.jobs.web.advice;
 
 import com.leaf.jobs.model.Response;
-import com.leaf.jobs.model.exception.JobsException;
+import com.leaf.jobs.exception.JobsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,22 +1,37 @@
 # leaf-jobs
-集群任务调度中心
+#### 集群任务调度中心
+- rpc模块                 netty
+- quartz-support模块      quartz集群模式
+- core模块                核心逻辑，springboot控制台     
+- spi模块                 服务端需要依赖
+- test模块                spi的test模块
+                  
 
-###服务端配置
+#### 数据库脚本
+leaf-jobs/db/customer.sql
+leaf-jobs/db/tables_mysql_innodb.sql
+
+#### 服务端配置
+可参考test模块
+
+依赖
+````xml
+    <dependency>
+        <groupId>com.leaf.jobs</groupId>
+        <artifactId>leaf-jobs-spi</artifactId>
+    </dependency>
 ````
-@Configuration
-@ComponentScan("com.leaf.jobs.spi")
-@JobsScanner(basePackages = "com.leaf.jobs")
-public class Config {
 
-    @Bean
-    public JobsProperties jobsProperties() {
-        JobsProperties jobsProperties = new JobsProperties();
-        jobsProperties.setRegisterAddress("zookeeper.dev.xianglin.com:2181");
-        jobsProperties.setSystemName("test");
-        return jobsProperties;
+支持springboot autoconfig
+````java
+@SpringBootApplication
+@JobsScanner(basePackages = "com.leaf.jobs")
+public class SpiApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpiApplication.class, args);
     }
 }
-
 
 public interface HelloService {
 
@@ -32,16 +47,27 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public String sayHello(String name) {
         log.info("hi service" + name);
-        return "sb: " + name;
+        return "ss: " + name;
     }
 
     @Override
     public String sayHello2(String name, String age) {
         log.info("hi service" + name);
-        return "sb: " + name + age;
+        return "ss: " + name + age;
     }
 }
 ````
+
+````properties
+    leaf:
+        jobs:
+          registerAddress: zookeeper.dev.xianglin.com:2181
+          systemName: rjb
+          port: 9000
+````
+
+#### 调度中心控制台
+启动 com.leaf.jobs.JobsApplication 即可
 
 
 

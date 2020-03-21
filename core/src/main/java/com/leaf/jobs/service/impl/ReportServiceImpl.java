@@ -36,7 +36,7 @@ public class ReportServiceImpl implements ReportService {
                 .invokeCount(count)
                 .errorCount(errorCount)
                 .taskCount(taskCount)
-                .successPercent(BigDecimal.valueOf((count - errorCount) / count).setScale(2, RoundingMode.HALF_UP))
+                .successPercent(BigDecimal.valueOf((count - errorCount) * 100/ count).setScale(2, RoundingMode.HALF_UP))
                 .build();
         return Response.ofSuccess(statsVo);
     }

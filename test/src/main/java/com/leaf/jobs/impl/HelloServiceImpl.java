@@ -11,12 +11,12 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public String sayHello(String name) {
         log.info("hi service" + name);
-        return "sb: " + name;
+        return "ss: " + name;
     }
 
     @Override
     public String sayHello2(String name, String age) {
         log.info("hi service" + name);
-        return "sb: " + name + age;
+        return "ss: " + name + age;
     }
 }

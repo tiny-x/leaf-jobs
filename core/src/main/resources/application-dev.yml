@@ -37,3 +37,8 @@ mybatis:
 mapper:
   mappers:
     - tk.mybatis.mapper.common.Mapper
+
+leaf:
+  jobs:
+    registerAddress: zookeeper.dev.xianglin.com:2181
+    systemName: rjb

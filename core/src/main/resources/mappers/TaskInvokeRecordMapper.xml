@@ -30,6 +30,9 @@
             <if test="taskName != '' and taskName != null">
                 and b.TASK_NAME = #{taskName}
             </if>
+            <if test="invokeResult != '' and invokeResult != null">
+                and a.INVOKE_RESULT = #{invokeResult}
+            </if>
         </where>
     </select>
 
