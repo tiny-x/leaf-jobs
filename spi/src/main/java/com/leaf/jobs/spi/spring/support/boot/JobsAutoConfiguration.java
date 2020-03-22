@@ -1,4 +1,4 @@
-package com.leaf.jobs.spi.spring.support;
+package com.leaf.jobs.spi.spring.support.boot;
 
 import com.leaf.register.api.RegisterType;
 import com.leaf.spring.init.bean.ProviderFactoryBean;

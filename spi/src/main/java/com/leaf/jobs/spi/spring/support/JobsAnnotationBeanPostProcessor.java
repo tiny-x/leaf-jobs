@@ -10,6 +10,9 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * 后置处理器，发布rpc 服务
+ */
 public class JobsAnnotationBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;

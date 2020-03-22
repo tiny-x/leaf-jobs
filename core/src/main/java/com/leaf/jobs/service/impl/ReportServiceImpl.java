@@ -8,6 +8,7 @@ import com.leaf.jobs.model.StatsVo;
 import com.leaf.jobs.service.ReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +27,12 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private TaskInvokeRecordMapper taskInvokeRecordMapper;
 
+    /**
+     *  @Cacheable 不支持失效时间
+     *
+     * @return
+     */
+    @Cacheable(value = "statsVo")
     @Override
     public Response<StatsVo> stats() {
         Integer errorCount = taskInvokeRecordMapper.selectErrorCount();
@@ -36,7 +43,7 @@ public class ReportServiceImpl implements ReportService {
                 .invokeCount(count)
                 .errorCount(errorCount)
                 .taskCount(taskCount)
-                .successPercent(BigDecimal.valueOf((count - errorCount) * 100/ count).setScale(2, RoundingMode.HALF_UP))
+                .successPercent(BigDecimal.valueOf((count - errorCount) * 100 / count).setScale(2, RoundingMode.HALF_UP))
                 .build();
         return Response.ofSuccess(statsVo);
     }

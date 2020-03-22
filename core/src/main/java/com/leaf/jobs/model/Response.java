@@ -1,9 +1,10 @@
 package com.leaf.jobs.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public class Response<T> {
+public class Response<T> implements Serializable {
 
     private static final int SUCCESS_CODE = 0;
 

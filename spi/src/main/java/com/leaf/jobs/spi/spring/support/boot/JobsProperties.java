@@ -1,4 +1,4 @@
-package com.leaf.jobs.spi.spring.support;
+package com.leaf.jobs.spi.spring.support.boot;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

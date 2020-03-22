@@ -23,6 +23,17 @@ spring:
       connection-timeout: 30000
   resources:
     static-locations: classpath:/static/
+  redis:
+    host: redis.dev.xianglin.com
+    port: 6379
+    max-idle: 8
+    min-idle: 0
+    max-active: 8
+    max-wait: -1
+    timeout: 3000
+  session:
+    store-type: redis
+
   servlet:
     multipart:
       max-file-size: 10MB

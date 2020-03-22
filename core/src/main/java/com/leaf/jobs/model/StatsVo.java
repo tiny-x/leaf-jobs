@@ -2,6 +2,7 @@ package com.leaf.jobs.model;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatsVo {
+public class StatsVo implements Serializable {
 
     private Integer taskCount;
 
