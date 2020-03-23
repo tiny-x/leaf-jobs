@@ -130,7 +130,7 @@
                 <repository>
                     <id>nexus</id>
                     <name>Public Repositories</name>
-                    <url>http://nexus.xianglin.com:8088/nexus/content/groups/hbyn/</url>
+                    <url>http://172.16.0.155:8088/nexus/content/groups/hbyn/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -144,7 +144,7 @@
                 <pluginRepository>
                     <id>nexus</id>
                     <name>Public Repositories</name>
-                    <url>http://nexus.xianglin.com:8088/nexus/content/groups/hbyn/</url>
+                    <url>http://172.16.0.155:8088/nexus/content/groups/hbyn/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>

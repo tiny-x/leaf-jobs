@@ -24,7 +24,7 @@ spring:
   resources:
     static-locations: classpath:/static/
   redis:
-    host: redis.dev.xianglin.com
+    host: 172.16.2.205
     port: 6379
     max-idle: 8
     min-idle: 0
@@ -51,5 +51,5 @@ mapper:
 
 leaf:
   jobs:
-    registerAddress: zookeeper.dev.xianglin.com:2181
+    registerAddress: 172.16.2.203:2181
     systemName: rjb

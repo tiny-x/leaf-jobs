@@ -61,7 +61,7 @@ public class HelloServiceImpl implements HelloService {
 ````properties
     leaf:
         jobs:
-          registerAddress: zookeeper.dev.xianglin.com:2181
+          registerAddress: 172.16.2.203:2181
           systemName: rjb
           port: 9000
 ````
