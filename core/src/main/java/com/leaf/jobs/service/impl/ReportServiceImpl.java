@@ -32,7 +32,7 @@ public class ReportServiceImpl implements ReportService {
      *
      * @return
      */
-    @Cacheable(value = "statsVo")
+    //@Cacheable(value = "statsVo")
     @Override
     public Response<StatsVo> stats() {
         Integer errorCount = taskInvokeRecordMapper.selectErrorCount();

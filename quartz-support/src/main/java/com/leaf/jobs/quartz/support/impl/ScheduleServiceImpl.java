@@ -75,7 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         TriggerKey triggerKey = TriggerKey.triggerKey(String.valueOf(job.getId()), job.getGroup());
 
         if (!scheduler.checkExists(triggerKey)) {
-            throw new JobsException(triggerKey + "is not exists!");
+            throw new JobsException(triggerKey + " is not exists!");
         }
         scheduler.unscheduleJob(triggerKey);
         log.info("delete job, group:{}, name:{}", job.getGroup(), String.valueOf(job.getId()));

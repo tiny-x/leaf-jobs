@@ -66,7 +66,7 @@ public class RpcTimerJob implements Job {
         try {
             checkNotNull(invoke, "任务调度失败 invoke is null, taskId: %s serviceMeat: %s", task.getTaskId(), serviceMeta);
 
-            logger.error("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
+            logger.info("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
             invoke.$invoke(methodName, params);
             logger.info("任务执行成功，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
 
@@ -79,7 +79,8 @@ public class RpcTimerJob implements Job {
                             methodName);
                     taskInvokeRecord.setCompleteDate(new Date());
                     taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_SUCCESS.getCode());
-                    taskInvokeRecord.setResponse(o.toString());
+
+                    taskInvokeRecord.setResponse(String.valueOf(o));
                     taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
                 }
 

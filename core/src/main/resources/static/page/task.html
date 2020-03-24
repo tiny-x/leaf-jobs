@@ -189,7 +189,10 @@
                     $.ajax({
                         url: '/task/delete',
                         type: 'post',
-                        data: {"taskId": data.taskId},
+                        data: {
+                            "id": data.taskId,
+                            "group": data.taskGroup
+                        },
                         dataType: "json",
                         success: function (ret) {
                             if (ret.code != 0) {
