@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leaf.jobs.dao.mapper.UserMapper">
+
+    <select id="selectByMobilePhone" resultType="com.leaf.jobs.dao.model.User" parameterType="string">
+        select user_id      userId,
+               mobile_phone mobilePhone,
+               user_name    userName,
+               email,
+               password
+        from t_user
+        where MOBILE_PHONE = #{value}
+    </select>
+</mapper>

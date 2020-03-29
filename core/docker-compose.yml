@@ -1,0 +1,10 @@
+version: '3'
+services:  
+ jobs:
+    restart: always
+    build: .
+    working_dir: /
+    volumes:
+      - ./logs/leaf-jobs:/data/logs/leaf-jobs
+    ports:
+      - "8080:8080"

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  jobs-spi-test:
+    restart: always
+    build: .
+    working_dir: /
+    volumes:
+      - ./logs/leaf-jobs:/data/logs/leaf-jobs
+    environment:
+      leaf.provider.register.address: 172.16.76.69
+    ports:
+      - "9000:9000"

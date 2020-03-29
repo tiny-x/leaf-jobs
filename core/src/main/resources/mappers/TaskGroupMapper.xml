@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leaf.jobs.dao.mapper.TaskGroupMapper">
+
+    <update id="updateOnlineAddress">
+        update t_task_group
+        set UPDATE_DATE = now(), ONLINE_ADDRESS = #{onlineAddress}
+        where GROUP_NAME = #{groupName}
+    </update>
+</mapper>

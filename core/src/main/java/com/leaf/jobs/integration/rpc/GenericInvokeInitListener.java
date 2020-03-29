@@ -2,13 +2,15 @@ package com.leaf.jobs.integration.rpc;
 
 import com.leaf.common.model.ServiceMeta;
 import com.leaf.jobs.context.JobsContext;
+import com.leaf.jobs.dao.mapper.TaskGroupMapper;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
+import com.leaf.jobs.dao.model.TaskGroup;
+import com.leaf.jobs.model.JobsConstants;
 import com.leaf.rpc.GenericProxyFactory;
 import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.rpc.consumer.invoke.GenericInvoke;
-import com.leaf.serialization.api.SerializerType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -28,6 +30,9 @@ import java.util.List;
 public class GenericInvokeInitListener {
 
     @Autowired
+    private TaskGroupMapper taskGroupMapper;
+
+    @Autowired
     private TaskMapper taskMapper;
 
     @Autowired
@@ -38,6 +43,16 @@ public class GenericInvokeInitListener {
         List<Task> tasks = taskMapper.selectAll();
         for (Task task : tasks) {
             initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), consumer, task.getTimeOut());
+            int i = taskGroupMapper.updateOnlineAddress(task.getTaskGroup(), task.getOnlineAddress());
+            if (i == 0) {
+                TaskGroup taskGroup = TaskGroup.builder()
+                        .groupName(task.getTaskGroup())
+                        .onlineAddress(task.getOnlineAddress())
+                        .creator(JobsConstants.DEFAULT_CREATOR)
+                        .updater(JobsConstants.DEFAULT_UPDATER)
+                        .build();
+                taskGroupMapper.insertSelective(taskGroup);
+            }
         }
     }
 

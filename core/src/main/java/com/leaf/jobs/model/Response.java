@@ -27,10 +27,10 @@ public class Response<T> implements Serializable {
         Response response = new Response();
         response.setData(t);
         if (t instanceof List && t != null)
-            response.setCount(((List)t).size());
+            response.setCount(((List) t).size());
 
         if (t instanceof Set && t != null)
-            response.setCount(((Set)t).size());
+            response.setCount(((Set) t).size());
 
         return response;
     }
@@ -40,6 +40,10 @@ public class Response<T> implements Serializable {
         response.setCode(ERROR_CODE);
         response.setData(message);
         return response;
+    }
+
+    public boolean isSuccess() {
+        return code == SUCCESS_CODE;
     }
 
     public int getCode() {

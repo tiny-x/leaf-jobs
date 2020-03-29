@@ -2,7 +2,6 @@ package com.leaf.jobs.context;
 
 import com.google.common.base.Strings;
 import com.leaf.common.concurrent.ConcurrentSet;
-import com.leaf.common.model.ServiceMeta;
 import com.leaf.common.utils.Maps;
 import com.leaf.jobs.model.RegisterServiceVo;
 import com.leaf.register.api.model.RegisterMeta;
@@ -12,8 +11,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import java.awt.image.Kernel;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -65,10 +64,10 @@ public class JobsContext implements ApplicationContextAware {
                 for (RegisterMeta registerMeta : registerMetas) {
                     for (String method : registerMeta.getMethods()) {
                         RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                        set.add(registerServiceVo);
                         registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
                         registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
                         registerServiceVo.setMethod(method);
+                        set.add(registerServiceVo);
                     }
                 }
             }
@@ -78,10 +77,10 @@ public class JobsContext implements ApplicationContextAware {
 
                 for (String method : registerMeta.getMethods()) {
                     RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                    set.add(registerServiceVo);
                     registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
                     registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
                     registerServiceVo.setMethod(method);
+                    set.add(registerServiceVo);
                 }
             }
         } else {
@@ -90,10 +89,10 @@ public class JobsContext implements ApplicationContextAware {
                 if (serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName())) {
                     for (String method : registerMeta.getMethods()) {
                         RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                        set.add(registerServiceVo);
                         registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
                         registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
                         registerServiceVo.setMethod(method);
+                        set.add(registerServiceVo);
                     }
                 }
             }
