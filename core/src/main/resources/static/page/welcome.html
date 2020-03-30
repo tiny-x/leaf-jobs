@@ -254,7 +254,7 @@
             type: 'post',
             success: function (ret) {
                 if (ret.code != 0) {
-                    layer.msg(ret.tips, {
+                    layer.msg(ret.message, {
                         time: 2000, //20s后自动关闭
                         btn: ['关闭']
                     });
@@ -321,7 +321,7 @@
             type: 'post',
             success: function (ret) {
                 if (ret.code != 0) {
-                    layer.msg(ret.tips, {
+                    layer.msg(ret.message, {
                         time: 2000, //20s后自动关闭
                         btn: ['关闭']
                     });

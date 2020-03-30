@@ -57,10 +57,10 @@
                     <a href="javascript:;" data-check-screen="full"><i class="fa fa-arrows-alt"></i></a>
                 </li>
                 <li class="layui-nav-item layuimini-setting">
-                    <a href="javascript:;">admin</a>
+                    <a id="userName" href="javascript:;">admin</a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="javascript:;" layuimini-content-href="page/user/user-setting.html" data-title="基本资料"
+                            <a href="javascript:;" layuimini-content-href="page/user/user-self-setting.html" data-title="基本资料"
                                data-icon="fa fa-gears">基本资料<span class="layui-badge-dot"></span></a>
                         </dd>
                         <dd>
@@ -131,10 +131,14 @@
 <script src="js/lay-config.js?v=2.0.0" charset="utf-8"></script>
 <script>
     layui.use(['jquery', 'layer', 'miniAdmin', 'miniTongji'], function () {
+
         var $ = layui.jquery,
             layer = layui.layer,
             miniAdmin = layui.miniAdmin,
             miniTongji = layui.miniTongji;
+
+        $("#userName").text(layui.router().search.userName);
+        console.log(layui.router());
 
         var options = {
             iniUrl: "api/init.json",    // 初始化接口
@@ -165,7 +169,7 @@
                 type: 'post',
                 success: function (ret) {
                     if (ret.code != 0) {
-                        layer.msg(ret.tips, {
+                        layer.msg(ret.message, {
                             time: 2000, //2s后自动关闭
                             btn: ['关闭']
                         });

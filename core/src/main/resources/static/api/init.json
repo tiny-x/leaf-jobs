@@ -26,6 +26,18 @@
           "href": "page/task-invoke-record.html",
           "icon": "fa fa-window-maximize",
           "target": "_self"
+        },
+        {
+          "title": "用户管理",
+          "href": "page/user.html",
+          "icon": "fa fa-window-maximize",
+          "target": "_self"
+        },
+        {
+          "title": "任务组",
+          "href": "page/task-group.html",
+          "icon": "fa fa-window-maximize",
+          "target": "_self"
         }
       ]
     }

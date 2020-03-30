@@ -3,6 +3,7 @@ package com.leaf.jobs.dao.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.leaf.jobs.model.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "t_task_group")
-public class TaskGroup implements Serializable {
+public class TaskGroup extends PageQuery implements Serializable  {
 
     /**
      * 服务组ID

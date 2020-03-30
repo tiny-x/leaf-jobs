@@ -1,10 +1,11 @@
 package com.leaf.jobs.service.impl;
 
 import com.google.common.base.Strings;
-import com.leaf.jobs.context.Subjects;
 import com.leaf.jobs.dao.mapper.UserMapper;
 import com.leaf.jobs.dao.model.User;
 import com.leaf.jobs.exception.JobsException;
+import com.leaf.jobs.generate.SnowflakeIdWorker;
+import com.leaf.jobs.model.JobsConstants;
 import com.leaf.jobs.model.Response;
 import com.leaf.jobs.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,17 +40,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<List<User>> selectUsers(User user) {
-        List<User> users;
-        if (user == null) {
-            users = userMapper.selectAll();
-        } else {
-            users = userMapper.select(user);
-        }
+        Example example = Example.builder(User.class).build();
+        example.and().andEqualTo("userName", user.getUserName());
+        List<User> users = userMapper.selectByExample(example);
         return Response.ofSuccess(users);
     }
 
     @Override
     public Response addUser(User user) {
+        user.setUserId(SnowflakeIdWorker.getInstance().nextId());
+        // 默认密码
+        user.setPassword(DigestUtils.md5DigestAsHex(JobsConstants.DEFAULT_USER_PASSWORD.getBytes()));
         userMapper.insertSelective(user);
         return Response.ofSuccess();
     }
@@ -65,6 +66,5 @@ public class UserServiceImpl implements UserService {
         userMapper.updateByPrimaryKeySelective(user);
         return Response.ofSuccess();
     }
-
 
 }

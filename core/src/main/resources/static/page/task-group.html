@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>任务组</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">任务组</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="groupName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                            <button type="reset" class="layui-btn layui-btn-primary"><i class="layui-icon"></i> 清 空
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="task-group-table" lay-filter="currentTableFilter"></table>
+
+    </div>
+</div>
+
+<script src="../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#task-group-table',
+            url: '/task/selectGroup',
+            cols: [[
+                {field: 'groupName', title: '任务组'},
+                {field: 'onlineAddress', title: '在线的服务端'},
+            ]],
+            limits: [10, 20, 50, 100],
+            limit: 10,
+            page: true
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+
+            //执行搜索重载
+            table.reload('task-group-table', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    groupName: data.field.groupName,
+                }
+                , param: '1'
+            }, 'data');
+            return false;
+        });
+    });
+
+</script>
+
+</body>
+</html>

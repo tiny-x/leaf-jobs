@@ -19,13 +19,13 @@ public class LoginController {
     private UserService userService;
 
     @RequestMapping("/login")
-    public Response login(User user, HttpSession session) {
+    public Response<User> login(User user, HttpSession session) {
         if (Strings.isNullOrEmpty(user.getUserName())) {
             throw new JobsException("账号不能为空");
         }
         Response<User> userResponse = userService.login(user);
         session.setAttribute(SessionAttribute.CURRENT_USER.name(), userResponse.getData());
-        return Response.ofSuccess();
+        return Response.ofSuccess(userResponse.getData());
     }
 
     @RequestMapping("/logout")

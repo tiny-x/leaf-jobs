@@ -142,7 +142,7 @@
         table.on('toolbar(currentTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
-                    title: '添加用户',
+                    title: '添加任务',
                     type: 2,
                     shade: 0.2,
                     maxmin: true,
@@ -196,7 +196,7 @@
                         dataType: "json",
                         success: function (ret) {
                             if (ret.code != 0) {
-                                layer.msg(ret.tips, {
+                                layer.msg(ret.message, {
                                     time: 2000, //20s后自动关闭
                                     btn: ['关闭']
                                 });
