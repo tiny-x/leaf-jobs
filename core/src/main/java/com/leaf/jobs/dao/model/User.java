@@ -4,15 +4,21 @@ import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * t_user
  * @author 
  */
 @Data
+@Table(name = "t_user")
 public class User implements Serializable {
     /**
      * 用户ID
      */
+    @Id
     private Long userId;
 
     /**
@@ -24,7 +30,13 @@ public class User implements Serializable {
 
     private String email;
 
+    @Transient
+    private String oldPassword;
+
     private String password;
+
+    @Transient
+    private String againPassword;
 
     private String creator;
 

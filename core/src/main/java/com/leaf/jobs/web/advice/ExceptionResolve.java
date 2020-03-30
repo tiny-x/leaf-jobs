@@ -5,6 +5,7 @@ import com.leaf.jobs.exception.JobsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ExceptionResolve {
 
     @ExceptionHandler(Exception.class)
+    @ResponseBody
     public Response resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
                                      Exception ex) {
         log.error(ex.getMessage(), ex);
@@ -27,9 +29,10 @@ public class ExceptionResolve {
      * @param ex
      */
     @ExceptionHandler(JobsException.class)
+    @ResponseBody
     public Response resolveBizException(HttpServletResponse response, Exception ex) {
         log.error(ex.getMessage(), ex);
-        return Response.ofFail("系统异常，请检查日志: " + ex.getMessage());
+        return Response.ofFail(ex.getMessage());
     }
 
 }

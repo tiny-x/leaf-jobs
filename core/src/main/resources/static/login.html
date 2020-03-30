@@ -166,7 +166,7 @@
                 dataType: "json",
                 success: function (ret) {
                     if (ret.code != 0) {
-                        layer.msg(ret.tips, {
+                        layer.msg(ret.message, {
                             time: 2000, //2s后自动关闭
                             btn: ['关闭']
                         });

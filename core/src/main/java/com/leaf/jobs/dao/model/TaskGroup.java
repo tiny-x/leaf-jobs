@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * t_task_group
  * @author 
@@ -16,10 +19,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "t_task_group")
 public class TaskGroup implements Serializable {
+
     /**
      * 服务组ID
      */
+    @Id
     private Long groupId;
 
     /**

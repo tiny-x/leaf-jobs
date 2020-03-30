@@ -12,7 +12,7 @@ public class Response<T> implements Serializable {
 
     private int code = 0;
 
-    private int msg;
+    private String message;
 
     private long count;
 
@@ -38,7 +38,7 @@ public class Response<T> implements Serializable {
     public static <T> Response ofFail(String message) {
         Response response = new Response();
         response.setCode(ERROR_CODE);
-        response.setData(message);
+        response.setMessage(message);
         return response;
     }
 
@@ -54,12 +54,12 @@ public class Response<T> implements Serializable {
         this.code = code;
     }
 
-    public int getMessage() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMessage(int message) {
-        this.msg = message;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {

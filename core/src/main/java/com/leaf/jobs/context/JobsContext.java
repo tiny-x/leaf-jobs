@@ -60,31 +60,18 @@ public class JobsContext implements ApplicationContextAware {
         Set<RegisterServiceVo> set = new HashSet<>();
         if (Strings.isNullOrEmpty(group) && Strings.isNullOrEmpty(serviceName)) {
             for (String s : GROUP_MAP.keySet()) {
-                ConcurrentSet<RegisterMeta> registerMetas = GROUP_MAP.get(s);
-                for (RegisterMeta registerMeta : registerMetas) {
-                    for (String method : registerMeta.getMethods()) {
-                        RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                        registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
-                        registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
-                        registerServiceVo.setMethod(method);
-                        set.add(registerServiceVo);
-                    }
-                }
-            }
-        } else if (Strings.isNullOrEmpty(group) && !Strings.isNullOrEmpty(serviceName)) {
-            ConcurrentSet<RegisterMeta> registerMetas = GROUP_MAP.get(group);
-            for (RegisterMeta registerMeta : registerMetas) {
-
-                for (String method : registerMeta.getMethods()) {
-                    RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                    registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
-                    registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
-                    registerServiceVo.setMethod(method);
-                    set.add(registerServiceVo);
-                }
+                packageRegisterMeta(s, serviceName, set);
             }
         } else {
-            ConcurrentSet<RegisterMeta> registerMetas = GROUP_MAP.get(group);
+            packageRegisterMeta(group, serviceName, set);
+        }
+        return set;
+
+    }
+
+    private static void packageRegisterMeta(String group, String serviceName, Set<RegisterServiceVo> set) {
+        ConcurrentSet<RegisterMeta> registerMetas = GROUP_MAP.get(group);
+        if (!Strings.isNullOrEmpty(serviceName)) {
             for (RegisterMeta registerMeta : registerMetas) {
                 if (serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName())) {
                     for (String method : registerMeta.getMethods()) {
@@ -96,9 +83,17 @@ public class JobsContext implements ApplicationContextAware {
                     }
                 }
             }
+        } else {
+            for (RegisterMeta registerMeta : registerMetas) {
+                for (String method : registerMeta.getMethods()) {
+                    RegisterServiceVo registerServiceVo = new RegisterServiceVo();
+                    registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
+                    registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
+                    registerServiceVo.setMethod(method);
+                    set.add(registerServiceVo);
+                }
+            }
         }
-        return set;
-
     }
 
     @Override
