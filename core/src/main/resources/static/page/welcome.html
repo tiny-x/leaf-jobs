@@ -20,23 +20,6 @@
             color: #1aa094;
         }
 
-        .icon-cray {
-            color: #ffb800 !important;
-        }
-
-        .icon-blue {
-            color: #1e9fff !important;
-        }
-
-        .icon-tip {
-            color: #ff5722 !important;
-        }
-
-        .layuimini-qiuck-module {
-            text-align: center;
-            margin-top: 10px
-        }
-
         .layuimini-qiuck-module a i {
             display: inline-block;
             width: 100%;
@@ -100,10 +83,6 @@
             margin-top: .3em;
         }
 
-        .layui-red {
-            color: red
-        }
-
         .main_btn > p {
             height: 40px;
         }
@@ -112,40 +91,6 @@
             background-color: #F8F8F8;
         }
 
-        .layuimini-notice:hover {
-            background: #f6f6f6;
-        }
-
-        .layuimini-notice {
-            padding: 7px 16px;
-            clear: both;
-            font-size: 12px !important;
-            cursor: pointer;
-            position: relative;
-            transition: background 0.2s ease-in-out;
-        }
-
-        .layuimini-notice-title, .layuimini-notice-label {
-            padding-right: 70px !important;
-            text-overflow: ellipsis !important;
-            overflow: hidden !important;
-            white-space: nowrap !important;
-        }
-
-        .layuimini-notice-title {
-            line-height: 28px;
-            font-size: 14px;
-        }
-
-        .layuimini-notice-extra {
-            position: absolute;
-            top: 50%;
-            margin-top: -8px;
-            right: 16px;
-            display: inline-block;
-            height: 16px;
-            color: #999;
-        }
     </style>
 </head>
 <body>
@@ -159,10 +104,9 @@
                         <div class="layui-card">
                             <div class="layui-card-header"><i class="fa fa-warning icon"></i>数据统计</div>
                             <div class="layui-card-body">
-                                <div class="welcome-module">
                                     <div class="layui-row layui-col-space5">
 
-                                        <div class="layui-col-xs6">
+                                        <div class="layui-col-xs4">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
@@ -176,7 +120,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="layui-col-xs6">
+                                        <div class="layui-col-xs4">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
@@ -190,7 +134,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="layui-col-xs6">
+                                        <div class="layui-col-xs4">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
@@ -204,7 +148,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="layui-col-xs6">
+                                        <div class="layui-col-xs4">
                                             <div class="panel layui-bg-number">
                                                 <div class="panel-body">
                                                     <div class="panel-title">
@@ -218,7 +162,34 @@
                                             </div>
                                         </div>
 
-                                    </div>
+                                        <div class="layui-col-xs4">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-cyan">实时</span>
+                                                        <h5>今日执行次数</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 id="today-invoke-count" class="no-margins">0</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-col-xs4">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-cyan">实时</span>
+                                                        <h5>今日成功次数</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 id="today-success-percent" class="no-margins">0</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                 </div>
                             </div>
                         </div>
@@ -306,12 +277,12 @@
                 {
                     name: '调用次数',
                     type: 'line',
-                    data: [120, 132, 101, 134, 90, 230, 210]
+                    data: []
                 },
                 {
                     name: '失败次数',
                     type: 'line',
-                    data: [150, 232, 201, 154, 190, 330, 410]
+                    data: []
                 }
             ]
         };

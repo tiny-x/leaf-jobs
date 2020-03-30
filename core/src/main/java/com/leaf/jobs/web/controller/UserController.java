@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -43,13 +44,13 @@ public class UserController {
     }
 
     /**
-     * 修改用户信息
+     * 用户查询
      *
      * @param user
      * @return
      */
     @RequestMapping("/user/selectUsers")
-    public Response selectUsers(User user) {
+    public Response<List<User>> selectUsers(User user) {
         return userService.selectUsers(user);
     }
 

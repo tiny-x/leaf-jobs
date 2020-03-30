@@ -137,8 +137,7 @@
             miniAdmin = layui.miniAdmin,
             miniTongji = layui.miniTongji;
 
-        $("#userName").text(layui.router().search.userName);
-        console.log(layui.router());
+        $("#userName").text(layui.data('user').userName);
 
         var options = {
             iniUrl: "api/init.json",    // 初始化接口

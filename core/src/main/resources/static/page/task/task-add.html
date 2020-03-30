@@ -19,7 +19,7 @@
     <div class="layui-form-item">
         <label class="layui-form-label required">任务</label>
         <div class="layui-input-block">
-            <input type="text" name="" autocomplete="off" class="layui-input" id="taskSearch">
+            <input type="text" name="" autocomplete="off" class="layui-input" id="taskSearch" readonly>
             <input type="hidden" name="group" id="group">
             <input type="hidden" name="serviceName" id="serviceName">
             <input type="hidden" name="methodName" id="methodName">
@@ -57,14 +57,14 @@
     <div class="layui-form-item">
         <label class="layui-form-label required">负责人</label>
         <div class="layui-input-block">
-            <input type="text" name="principal" lay-verify="required" value="" class="layui-input">
+            <input type="text" name="principal" lay-verify="required" value="" class="layui-input" id="userSearch" readonly>
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">预警邮箱</label>
+        <label class="layui-form-label required">预警邮箱</label>
         <div class="layui-input-block">
-            <input type="email" name="riskEMail" placeholder="请输入邮箱" value="" class="layui-input">
+            <input type="email" name="riskEMail" lay-verify="required" placeholder="请输入邮箱" value="" class="layui-input">
         </div>
     </div>
 
@@ -154,6 +154,33 @@
                     $("#group").val(item.group);
                     $("#serviceName").val(item.serviceName);
                     $("#methodName").val(item.method);
+                });
+            }
+        })
+
+        tableSelect.render({
+            elem: '#userSearch',
+            checkedKey: 'id',
+            height: '400',
+            width: '900',
+            searchType: 'more',
+            searchList: [
+                {searchKey: 'userName', searchPlaceholder: '搜索用户名称'},
+            ],
+            table: {
+                url: '/user/selectUsers',
+                cols: [[
+                    {type: 'radio'},
+                    {field: 'userName', title: '用户名称'},
+                    {field: 'mobilePhone', title: '手机号码'},
+                    {field: 'email', title: '邮箱 '}
+                ]],
+                page: false
+            },
+            done: function (elem, data) {
+                layui.each(data.data, function (index, item) {
+                    $("#userSearch").val(item.userName);
+                    $("input[name = 'riskEMail']").val(item.email);
                 });
             }
         })

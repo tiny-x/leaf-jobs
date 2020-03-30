@@ -41,7 +41,7 @@
                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit
                                     lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
                             </button>
-                            <button type="reset" class="layui-btn layui-btn-primary" ><i class="layui-icon"></i> 清 空
+                            <button type="reset" class="layui-btn layui-btn-primary"><i class="layui-icon"></i> 清 空
                             </button>
                         </div>
                     </div>
@@ -98,24 +98,59 @@
                 {
                     title: '操作', fixed: "right", minWidth: 250,
                     templet: function (data) {
-                        var opt = '<span><a id="btn-run" class="layui-btn layui-btn-xs layui-btn-normal" lay-event="run">运行</a>' +
-                            '<a id="btn-pause" class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pause">暂停</a>' +
+                        var opt = '<span>' +
+                            '<input type="checkbox" name="run-switch" lay-skin="switch" lay-filter="run-switch" lay-text="运行|暂停" data-field-taskId="' + data.taskId + '" data-field-group="' + data.taskGroup + '">' +
                             '<a class="layui-btn layui-btn-xs layui-btn-normal layui-btn-radius" lay-event="trigger">触发</a>' +
                             '<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="log">日志</a>' +
                             '<a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>' +
                             '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a></span>';
 
                         if (data.taskStatus == 'RUN') {
-                            return $(opt).find("#btn-run").attr("style", "display:none;").parents("span").html();
-                        } else if (data.taskStatus == 'PAUSE') {
-                            return $(opt).find("#btn-pause").attr("style", "display:none;").parents("span").html();
+                            return $(opt).find("input[name = 'run-switch']").attr("checked", "true").parents("span").html();
                         }
+                        return $(opt).html();
                     }
                 }
             ]],
             limits: [10, 20, 50, 100],
             limit: 10,
             page: true
+        });
+
+        form.on('switch(run-switch)', function (data) {
+
+            var checked = data.elem.checked;
+
+            layer.confirm(checked ? '运行任务？' : '暂停任务？', function (index) {
+                    $.ajax({
+                        url: '/task/updateJobStatus',
+                        type: 'post',
+                        data: {
+                            "id": data.elem.attributes['data-field-taskId'].nodeValue,
+                            "jobStatus": checked ? "RUN" : "PAUSE",
+                            "group": data.elem.attributes['data-field-group'].nodeValue
+                        },
+                        dataType: "json",
+                        success: function (ret) {
+                            if (ret.code == 0) {
+                                layer.msg('运行成功', {time: 3000, btn: ['关闭']});
+                                $(data.elem).parents("tr").find("span[name='taskStatus']").text(checked ? "RUN" : "PAUSE");
+                            } else {
+                                data.elem.checked = !checked
+                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                            }
+                            form.render();
+                        },
+                        error: function (xhr, textstatus, thrown) {
+                            layer.msg('run task error!');
+                        }
+                    });
+                    layer.close(index);
+                }, function () {
+                    data.elem.checked = !checked;
+                    form.render();
+                }
+            );
         });
 
         // 监听搜索操作
@@ -227,60 +262,6 @@
                         },
                         error: function (xhr, textstatus, thrown) {
                             layer.msg('delete task error!');
-                        }
-                    });
-                    layer.close(index);
-                });
-            } else if (obj.event === 'run') {
-                layer.confirm('运行任务？', function (index) {
-                    $.ajax({
-                        url: '/task/updateJobStatus',
-                        type: 'post',
-                        data: {
-                            "id": data.taskId,
-                            "jobStatus": "RUN",
-                            "group": data.taskGroup
-                        },
-                        dataType: "json",
-                        success: function (ret) {
-                            $(obj.tr).find("#btn-run").attr("style", "display:none;");
-                            $(obj.tr).find("#btn-pause").attr("style", "");
-                            $(obj.tr).find("span[name='taskStatus']").text("RUN");
-                            if (ret.code == 0) {
-                                layer.msg('运行成功', {time: 3000, btn: ['关闭']});
-                            } else {
-                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
-                            }
-                        },
-                        error: function (xhr, textstatus, thrown) {
-                            layer.msg('run task error!');
-                        }
-                    });
-                    layer.close(index);
-                });
-            } else if (obj.event === 'pause') {
-                layer.confirm('暂停任务？', function (index) {
-                    $.ajax({
-                        url: '/task/updateJobStatus',
-                        type: 'post',
-                        data: {
-                            "id": data.taskId,
-                            "jobStatus": "PAUSE",
-                            "group": data.taskGroup
-                        },
-                        dataType: "json",
-                        success: function (ret) {
-                            $(obj.tr).find("#btn-pause").attr("style", "display:none;");
-                            $(obj.tr).find("#btn-run").attr("style", "");
-                            $(obj.tr).find("span[name='taskStatus']").text("PAUSE");
-                            if (ret.code == 0) {
-                                layer.msg('暂停成功', {time: 3000, btn: ['关闭']});
-                            } else {
-                                layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
-                            }
-                        },
-                        error: function (xhr, textstatus, thrown) {
-                            layer.msg('pause task error!');
                         }
                     });
                     layer.close(index);
