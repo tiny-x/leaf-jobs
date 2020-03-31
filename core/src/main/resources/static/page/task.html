@@ -21,7 +21,9 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">任务组</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="taskGroup" autocomplete="off" class="layui-input">
+                                <select id="taskGroup" name="taskGroup" autocomplete="off" class="layui-input">
+                                    <option value="">-请选择-</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -69,6 +71,24 @@
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table;
+
+        $.ajax({
+            url: '/task/selectGroup',
+            type: 'post',
+            success: function (ret) {
+                if (ret.code == 0) {
+                    $.each(ret.data, function (index, item) {
+                        $("#taskGroup").append(new Option(item.groupName, item.groupName))
+                    })
+                    form.render();
+                } else {
+                    layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                }
+            },
+            error: function (xhr, textstatus, thrown) {
+                layer.msg('select group  error!');
+            }
+        });
 
         table.render({
             elem: '#task',

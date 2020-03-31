@@ -184,7 +184,7 @@
                                                         <h5>今日成功次数</h5>
                                                     </div>
                                                     <div class="panel-content">
-                                                        <h1 id="today-success-percent" class="no-margins">0</h1>
+                                                        <h1 id="today-success-count" class="no-margins">0</h1>
                                                     </div>
                                                 </div>
                                             </div>
@@ -235,6 +235,8 @@
                     $("#error-count").text(ret.data.errorCount);
                     $("#error-count").text(ret.data.errorCount);
                     $("#success-percent").text(ret.data.successPercent + "%");
+                    $("#today-invoke-count").text(ret.data.todayInvokeCount);
+                    $("#today-success-count").text(ret.data.todaySuccessCount);
                 }
             },
             error: function (xhr, textstatus, thrown) {

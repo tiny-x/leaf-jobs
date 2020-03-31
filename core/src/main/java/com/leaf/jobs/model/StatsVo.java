@@ -51,4 +51,14 @@ public class StatsVo implements Serializable {
      * 时间列表
      */
     private List<String> dateList;
+
+    /**
+     * 今日执行次数
+     */
+    private Integer todayInvokeCount;
+
+    /**
+     * 今日成功次数
+     */
+    private Integer todaySuccessCount;
 }
