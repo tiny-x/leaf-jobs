@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -53,47 +54,36 @@ public class JobsContext implements ApplicationContextAware {
      * @return
      */
     public static GenericInvoke getInvoke(Long taskId) {
-        return invokeMap.get(taskId);
+        GenericInvoke genericInvoke = invokeMap.get(taskId);
+        return genericInvoke;
     }
 
     public static Set<RegisterServiceVo> getRegisterServiceVo(String group, String serviceName) {
         Set<RegisterServiceVo> set = new HashSet<>();
-        if (Strings.isNullOrEmpty(group) && Strings.isNullOrEmpty(serviceName)) {
-            for (String s : GROUP_MAP.keySet()) {
-                packageRegisterMeta(s, serviceName, set);
-            }
+        if (Strings.isNullOrEmpty(group)) {
+            GROUP_MAP.get(group).stream()
+                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()) : true)
+                    .forEach(registerMeta -> Arrays.stream(registerMeta.getMethods()).forEach(method -> {
+                                set.add(RegisterServiceVo.builder()
+                                        .group(registerMeta.getServiceMeta().getGroup())
+                                        .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
+                                        .method(method)
+                                        .build());
+                            }
+                    ));
         } else {
-            packageRegisterMeta(group, serviceName, set);
+            GROUP_MAP.forEach((s, registerMetas) -> registerMetas.stream()
+                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()) : true)
+                    .forEach(registerMeta -> Arrays.stream(registerMeta.getMethods()).forEach(method -> {
+                        set.add(RegisterServiceVo.builder()
+                                .group(registerMeta.getServiceMeta().getGroup())
+                                .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
+                                .method(method)
+                                .build());
+                            }
+                    )));
         }
         return set;
-
-    }
-
-    private static void packageRegisterMeta(String group, String serviceName, Set<RegisterServiceVo> set) {
-        ConcurrentSet<RegisterMeta> registerMetas = GROUP_MAP.get(group);
-        if (!Strings.isNullOrEmpty(serviceName)) {
-            for (RegisterMeta registerMeta : registerMetas) {
-                if (serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName())) {
-                    for (String method : registerMeta.getMethods()) {
-                        RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                        registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
-                        registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
-                        registerServiceVo.setMethod(method);
-                        set.add(registerServiceVo);
-                    }
-                }
-            }
-        } else {
-            for (RegisterMeta registerMeta : registerMetas) {
-                for (String method : registerMeta.getMethods()) {
-                    RegisterServiceVo registerServiceVo = new RegisterServiceVo();
-                    registerServiceVo.setGroup(registerMeta.getServiceMeta().getGroup());
-                    registerServiceVo.setServiceName(registerMeta.getServiceMeta().getServiceProviderName());
-                    registerServiceVo.setMethod(method);
-                    set.add(registerServiceVo);
-                }
-            }
-        }
     }
 
     @Override

@@ -42,7 +42,7 @@ public class GenericInvokeInitListener {
     public void genericInvokeInit(ContextRefreshedEvent event) {
         List<Task> tasks = taskMapper.selectAll();
         for (Task task : tasks) {
-            initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), consumer, task.getTimeOut());
+            initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut());
             int i = taskGroupMapper.updateOnlineAddress(task.getTaskGroup(), task.getOnlineAddress());
             if (i == 0) {
                 TaskGroup taskGroup = TaskGroup.builder()
@@ -56,7 +56,7 @@ public class GenericInvokeInitListener {
         }
     }
 
-    public static void initInvoke(Long taskId, String group, String serviceName, Consumer consumer, Long timeMills) {
+    public void initInvoke(Long taskId, String group, String serviceName, Long timeMills) {
         ServiceMeta serviceMeta = new ServiceMeta(group, serviceName);
         GenericInvoke genericInvoke = GenericProxyFactory.factory()
                 .consumer(consumer)

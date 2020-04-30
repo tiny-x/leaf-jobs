@@ -5,6 +5,7 @@ import lombok.*;
 @Setter
 @Getter
 @EqualsAndHashCode
+@Builder
 public class RegisterServiceVo {
 
     private String group;

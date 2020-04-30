@@ -7,16 +7,16 @@ import com.leaf.common.concurrent.ConcurrentSet;
 import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
+import com.leaf.jobs.generate.SnowflakeIdWorker;
+import com.leaf.jobs.integration.rpc.GenericInvokeInitListener;
 import com.leaf.jobs.job.RpcTimerJob;
 import com.leaf.jobs.model.JobStatus;
 import com.leaf.jobs.model.JobVo;
 import com.leaf.jobs.model.RegisterServiceVo;
 import com.leaf.jobs.model.Response;
-import com.leaf.jobs.generate.SnowflakeIdWorker;
 import com.leaf.jobs.quartz.support.impl.ScheduleService;
 import com.leaf.jobs.service.JobsService;
 import com.leaf.register.api.model.RegisterMeta;
-import com.leaf.rpc.consumer.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Set;
-
-import static com.leaf.jobs.integration.rpc.GenericInvokeInitListener.initInvoke;
 
 /**
  * @author yefei
@@ -35,13 +33,13 @@ import static com.leaf.jobs.integration.rpc.GenericInvokeInitListener.initInvoke
 public class JobsServiceImpl implements JobsService {
 
     @Autowired
-    private Consumer consumer;
-
-    @Autowired
     private TaskMapper taskMapper;
 
     @Autowired
     private ScheduleService scheduleService;
+
+    @Autowired
+    private GenericInvokeInitListener genericInvokeInitListener;
 
     @Override
     public Response<Set<RegisterServiceVo>> getRegisterService(JobVo jobVo) {
@@ -56,14 +54,6 @@ public class JobsServiceImpl implements JobsService {
         if (registerMetas == null) {
             Response.ofFail("任务已经下线，请重新刷新试试");
         }
-        String onlineIp = "";
-        for (RegisterMeta registerMeta : registerMetas) {
-            if (registerMeta.getServiceMeta().getServiceProviderName().equals(jobVo.getServiceName())) {
-                onlineIp = onlineIp + "," + registerMeta.getAddress();
-            }
-        }
-        onlineIp = onlineIp.replaceFirst(",", "");
-
         Task task = Task.builder().taskGroup(jobVo.getGroup())
                 .taskId(SnowflakeIdWorker.getInstance().nextId())
                 .taskGroup(jobVo.getGroup())
@@ -76,13 +66,17 @@ public class JobsServiceImpl implements JobsService {
                 .principal(jobVo.getPrincipal())
                 .riskEMail(jobVo.getRiskEMail())
                 .remark(jobVo.getRemark())
-                .onlineAddress(onlineIp)
+                .onlineAddress(registerMetas.stream()
+                        .filter(registerMeta -> registerMeta.getServiceMeta().getServiceProviderName().equals(jobVo.getServiceName()))
+                        .map(registerMeta -> registerMeta.getAddress().toString())
+                        .reduce((x, y) -> x + y)
+                        .get())
                 .timeOut(jobVo.getTimeMillis()).build();
         jobVo.setId(task.getTaskId());
 
         taskMapper.insert(task);
         scheduleService.add(jobVo, RpcTimerJob.class);
-        initInvoke(task.getTaskId(), jobVo.getGroup(), jobVo.getServiceName(), consumer, jobVo.getTimeMillis());
+        genericInvokeInitListener.initInvoke(task.getTaskId(), jobVo.getGroup(), jobVo.getServiceName(), jobVo.getTimeMillis());
 
         return Response.ofSuccess();
     }
