@@ -11,8 +11,14 @@ import com.leaf.rpc.GenericProxyFactory;
 import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.rpc.consumer.invoke.GenericInvoke;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -20,40 +26,25 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * spring 容器监听
  * 初始化GenericInvoke
  *
  * @author yefei
  */
 @Component
 @Slf4j
-public class GenericInvokeInitListener {
-
-    @Autowired
-    private TaskGroupMapper taskGroupMapper;
-
-    @Autowired
-    private TaskMapper taskMapper;
+public class GenericInvokeInitBeanPosProcessor implements BeanPostProcessor {
 
     @Autowired
     private Consumer consumer;
 
-    @EventListener
-    public void genericInvokeInit(ContextRefreshedEvent event) {
-        List<Task> tasks = taskMapper.selectAll();
-        for (Task task : tasks) {
-            initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut());
-            int i = taskGroupMapper.updateOnlineAddress(task.getTaskGroup(), task.getOnlineAddress());
-            if (i == 0) {
-                TaskGroup taskGroup = TaskGroup.builder()
-                        .groupName(task.getTaskGroup())
-                        .onlineAddress(task.getOnlineAddress())
-                        .creator(JobsConstants.DEFAULT_CREATOR)
-                        .updater(JobsConstants.DEFAULT_UPDATER)
-                        .build();
-                taskGroupMapper.insertSelective(taskGroup);
-            }
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof TaskMapper) {
+            TaskMapper taskMapper = (TaskMapper) bean;
+            List<Task> tasks = taskMapper.selectAll();
+            tasks.forEach(task -> initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut()));
         }
+        return bean;
     }
 
     public void initInvoke(Long taskId, String group, String serviceName, Long timeMills) {

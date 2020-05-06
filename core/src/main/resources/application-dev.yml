@@ -1,6 +1,6 @@
 logging:
   config: classpath:logback-spring.xml
-  dir: /data/logs/leaf-jobs
+  dir: /tmp/logs/leaf-jobs
   level:
     root: info
     com.leaf: debug
@@ -51,5 +51,5 @@ mapper:
 
 leaf:
   jobs:
-    registerAddress: 47.98.219.112:2181
+    registerAddress: 121.43.175.216:2181
     systemName: jobs

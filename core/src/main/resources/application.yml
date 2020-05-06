@@ -1,4 +1,7 @@
 #spring.profiles.active
 spring:
   profiles:
-    active: @env@
+    active: '@env@'
+
+server:
+  port: 8777

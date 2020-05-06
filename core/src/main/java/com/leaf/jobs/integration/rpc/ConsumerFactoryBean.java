@@ -48,5 +48,4 @@ public class ConsumerFactoryBean implements FactoryBean<Consumer>, InitializingB
         return Consumer.class;
     }
 
-
 }

@@ -1,5 +1,5 @@
 leaf:
     jobs:
-      registerAddress: 47.98.219.112:2181
+      registerAddress: 121.43.175.216:2181
       systemName: rjb
       port: 9000

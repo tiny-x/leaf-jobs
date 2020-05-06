@@ -1,7 +1,15 @@
-package com.leaf.jobs.spi.spring.support.boot;
+package com.leaf.jobs.auto.config;
 
+import ch.qos.logback.classic.LoggerContext;
+import com.leaf.jobs.auto.config.support.log.RpcLoggerAppender;
+import com.leaf.jobs.log.LogsProvider;
 import com.leaf.register.api.RegisterType;
+import com.leaf.rpc.DefaultProxyFactory;
+import com.leaf.rpc.consumer.Consumer;
+import com.leaf.rpc.consumer.DefaultConsumer;
+import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,4 +30,22 @@ public class JobsAutoConfiguration {
 
         return providerFactoryBean;
     }
+
+    @Bean
+    public LogsProvider consumerFactory(JobsProperties jobsProperties) {
+        Consumer consumer = new DefaultConsumer(jobsProperties.getRegisterAddress(), RegisterType.ZOOKEEPER);
+        consumer.connectToRegistryServer(jobsProperties.getRegisterAddress());
+
+        LogsProvider logsProvider  = DefaultProxyFactory.factory(LogsProvider.class)
+                .consumer(consumer)
+                .timeMillis(3000L)
+                .invokeType(InvokeType.ASYNC)
+                .newProxy();
+
+        RpcLoggerAppender.setLogsProvider(logsProvider);
+        return logsProvider;
+    }
+
+
+
 }

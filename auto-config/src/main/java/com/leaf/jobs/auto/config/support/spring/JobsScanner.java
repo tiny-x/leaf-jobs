@@ -1,4 +1,4 @@
-package com.leaf.jobs.spi.spring.support;
+package com.leaf.jobs.auto.config.support.spring;
 
 import org.springframework.context.annotation.Import;
 

@@ -49,7 +49,7 @@
     </appender>
 
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="console"/>
         <appender-ref ref="common"/>
         <appender-ref ref="error"/>

@@ -4,11 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>spi</module>
         <module>core</module>
         <module>quartz-support</module>
         <module>common</module>
         <module>test</module>
+        <module>auto-config</module>
+        <module>starter</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -42,7 +43,13 @@
 
             <dependency>
                 <groupId>com.leaf.jobs</groupId>
-                <artifactId>leaf-jobs-spi</artifactId>
+                <artifactId>leaf-jobs-auto-config</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leaf.jobs</groupId>
+                <artifactId>leaf-jobs-starter</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
@@ -50,12 +57,6 @@
                 <groupId>com.leaf.jobs</groupId>
                 <artifactId>leaf-jobs-test</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>1.1.1</version>
             </dependency>
 
             <!-- mybatis -->

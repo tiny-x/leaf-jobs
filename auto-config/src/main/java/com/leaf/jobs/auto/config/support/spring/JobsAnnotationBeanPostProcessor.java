@@ -1,10 +1,13 @@
-package com.leaf.jobs.spi.spring.support;
+package com.leaf.jobs.auto.config.support.spring;
 
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Strings;
-import com.leaf.jobs.spi.JobsProvider;
+import com.leaf.jobs.auto.config.JobsProvider;
+import com.leaf.jobs.auto.config.support.log.RpcLoggerAppender;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -26,6 +29,9 @@ public class JobsAnnotationBeanPostProcessor implements BeanPostProcessor, Appli
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         JobsProvider annotation = bean.getClass().getAnnotation(JobsProvider.class);
         if (annotation != null) {
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            RpcLoggerAppender.configure(loggerContext, bean.getClass());
+
             ProviderFactoryBean providerFactoryBean = applicationContext.getBean(ProviderFactoryBean.class);
 
             ServiceRegistry serviceRegistry = providerFactoryBean.getProvider()

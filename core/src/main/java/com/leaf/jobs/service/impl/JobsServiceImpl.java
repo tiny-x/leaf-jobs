@@ -8,7 +8,7 @@ import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
 import com.leaf.jobs.generate.SnowflakeIdWorker;
-import com.leaf.jobs.integration.rpc.GenericInvokeInitListener;
+import com.leaf.jobs.integration.rpc.GenericInvokeInitBeanPosProcessor;
 import com.leaf.jobs.job.RpcTimerJob;
 import com.leaf.jobs.model.JobStatus;
 import com.leaf.jobs.model.JobVo;
@@ -39,7 +39,7 @@ public class JobsServiceImpl implements JobsService {
     private ScheduleService scheduleService;
 
     @Autowired
-    private GenericInvokeInitListener genericInvokeInitListener;
+    private GenericInvokeInitBeanPosProcessor genericInvokeInitBeanPosProcessor;
 
     @Override
     public Response<Set<RegisterServiceVo>> getRegisterService(JobVo jobVo) {
@@ -76,7 +76,7 @@ public class JobsServiceImpl implements JobsService {
 
         taskMapper.insert(task);
         scheduleService.add(jobVo, RpcTimerJob.class);
-        genericInvokeInitListener.initInvoke(task.getTaskId(), jobVo.getGroup(), jobVo.getServiceName(), jobVo.getTimeMillis());
+        genericInvokeInitBeanPosProcessor.initInvoke(task.getTaskId(), jobVo.getGroup(), jobVo.getServiceName(), jobVo.getTimeMillis());
 
         return Response.ofSuccess();
     }

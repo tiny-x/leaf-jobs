@@ -1,4 +1,4 @@
-package com.leaf.jobs.spi;
+package com.leaf.jobs.auto.config;
 
 import com.leaf.common.annotation.ServiceProvider;
 

@@ -1,6 +1,6 @@
-package com.leaf.jobs.spi.spring.support;
+package com.leaf.jobs.auto.config.support.spring;
 
-import com.leaf.jobs.spi.JobsProvider;
+import com.leaf.jobs.auto.config.JobsProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
