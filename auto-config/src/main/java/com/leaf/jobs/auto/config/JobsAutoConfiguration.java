@@ -1,6 +1,5 @@
 package com.leaf.jobs.auto.config;
 
-import ch.qos.logback.classic.LoggerContext;
 import com.leaf.jobs.auto.config.support.log.RpcLoggerAppender;
 import com.leaf.jobs.log.LogsProvider;
 import com.leaf.register.api.RegisterType;
@@ -9,7 +8,6 @@ import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.DefaultConsumer;
 import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +43,5 @@ public class JobsAutoConfiguration {
         RpcLoggerAppender.setLogsProvider(logsProvider);
         return logsProvider;
     }
-
-
 
 }

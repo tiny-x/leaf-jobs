@@ -69,5 +69,11 @@ public class HelloServiceImpl implements HelloService {
 #### 调度中心控制台
 启动 com.leaf.jobs.JobsApplication 即可
 
+#### 后续
+- 日志回显
+- 脚本 shell groovy 执行
+- 子任务
+- no channel bug
+
 
 
