@@ -1,7 +1,7 @@
 package com.leaf.jobs.impl;
 
 import com.leaf.jobs.HelloService;
-import com.leaf.jobs.auto.config.JobsProvider;
+import com.leaf.jobs.support.JobsProvider;
 import lombok.extern.slf4j.Slf4j;
 
 @JobsProvider(group = "rjb")

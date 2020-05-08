@@ -1,7 +1,7 @@
 package com.leaf.jobs.log;
 
 import com.leaf.common.annotation.ServiceInterface;
-import com.leaf.jobs.model.JobVo;
+import com.leaf.jobs.model.LogsDTO;
 
 /**
  * 日志通过rpc传输过来
@@ -9,5 +9,5 @@ import com.leaf.jobs.model.JobVo;
 @ServiceInterface(group = "jobs-log")
 public interface LogsProvider {
 
-    void transfer(JobVo jobVo);
+    void transfer(LogsDTO logsDTO);
 }

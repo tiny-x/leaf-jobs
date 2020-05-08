@@ -4,12 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>core</module>
+        <module>console</module>
         <module>quartz-support</module>
         <module>common</module>
         <module>test</module>
-        <module>auto-config</module>
-        <module>starter</module>
+        <module>jobs-spring</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -43,7 +42,19 @@
 
             <dependency>
                 <groupId>com.leaf.jobs</groupId>
+                <artifactId>leaf-jobs-spring</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leaf.jobs</groupId>
                 <artifactId>leaf-jobs-auto-config</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leaf.jobs</groupId>
+                <artifactId>leaf-jobs-support-spring</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
