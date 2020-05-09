@@ -1,7 +1,6 @@
 package com.leaf.jobs;
 
 import com.leaf.common.annotation.ServiceProvider;
-import com.leaf.jobs.log.LogsProvider;
 import com.leaf.jobs.model.LogsDTO;
 import lombok.extern.slf4j.Slf4j;
 

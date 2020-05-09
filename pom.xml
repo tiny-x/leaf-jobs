@@ -8,7 +8,7 @@
         <module>quartz-support</module>
         <module>common</module>
         <module>test</module>
-        <module>jobs-spring</module>
+        <module>jobs-server</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -42,7 +42,13 @@
 
             <dependency>
                 <groupId>com.leaf.jobs</groupId>
-                <artifactId>leaf-jobs-spring</artifactId>
+                <artifactId>leaf-jobs-server</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leaf.jobs</groupId>
+                <artifactId>leaf-jobs-service</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
@@ -114,6 +120,13 @@
                 <version>1.0.0</version>
             </dependency>
             <!-- leaf-rpc -->
+
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>2.5.7</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
