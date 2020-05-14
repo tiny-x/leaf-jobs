@@ -7,6 +7,7 @@ import com.leaf.rpc.DefaultProxyFactory;
 import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.DefaultConsumer;
 import com.leaf.rpc.consumer.InvokeType;
+import com.leaf.rpc.consumer.dispatcher.DispatchType;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,10 +38,12 @@ public class JobsAutoConfiguration {
         Consumer consumer = new DefaultConsumer(jobsProperties.getRegisterAddress(), RegisterType.ZOOKEEPER);
         consumer.connectToRegistryServer(jobsProperties.getRegisterAddress());
 
+        // 广播日志
         LogsProvider logsProvider  = DefaultProxyFactory.factory(LogsProvider.class)
                 .consumer(consumer)
                 .timeMillis(3000L)
                 .invokeType(InvokeType.ASYNC)
+                .dispatchType(DispatchType.BROADCAST)
                 .newProxy();
 
         RpcLoggerAppender.setLogsProvider(logsProvider);

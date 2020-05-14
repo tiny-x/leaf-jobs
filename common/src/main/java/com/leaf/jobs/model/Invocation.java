@@ -13,7 +13,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Invocation {
 
-    String recordId;
+    Long taskId;
+
+    Long recordId;
 
     String taskTye;
 

@@ -12,6 +12,7 @@
     <artifactId>leaf-jobs-starter</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>com.leaf.jobs</groupId>
             <artifactId>leaf-jobs-auto-config</artifactId>

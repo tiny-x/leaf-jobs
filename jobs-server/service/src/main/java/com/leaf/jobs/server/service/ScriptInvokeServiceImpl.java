@@ -1,9 +1,12 @@
-package com.leaf.jobs.support.service;
+package com.leaf.jobs.server.service;
 
 import com.leaf.jobs.enums.TaskType;
 import com.leaf.jobs.model.Invocation;
 import com.leaf.jobs.ScriptInvokeService;
 
+/**
+ * @author yefei
+ */
 public class ScriptInvokeServiceImpl implements ScriptInvokeService {
 
     @Override
@@ -15,7 +18,6 @@ public class ScriptInvokeServiceImpl implements ScriptInvokeService {
             case SERVICE:
             default:
         }
-
         return null;
     }
 }

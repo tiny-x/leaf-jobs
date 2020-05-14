@@ -1,6 +1,5 @@
 package com.leaf.jobs.integration.rpc;
 
-import com.leaf.jobs.LogsProviderImpl;
 import com.leaf.register.api.RegisterType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
@@ -9,6 +8,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author yefei
+ */
 @Component
 public class LogsProviderInit implements InitializingBean {
 

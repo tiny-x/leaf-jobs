@@ -16,6 +16,11 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.leaf.jobs</groupId>
+            <artifactId>leaf-jobs-common</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

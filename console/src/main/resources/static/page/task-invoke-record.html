@@ -110,9 +110,10 @@
                 {field: 'completeDate', title: '完成时间'},
                 {field: 'invokeResult', title: '执行结果'},
                 {
-                    title: '操作', fixed: "right", width: 60,
+                    title: '操作', fixed: "right", width: 120,
                     templet: function (data) {
-                        return '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="detail">详情</a></span>';
+                        return '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="detail">详情</a></span>' +
+                        '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="log">日志</a></span>';
                     }
                 }
             ]],
@@ -150,10 +151,46 @@
             var data = obj.data;
             if (obj.event === 'detail') {
 
-                layer.msg(ret.message, {
+                layer.msg("detail", {
                     time: 2000, //20s后自动关闭
                     btn: ['关闭']
                 });
+            } else if (obj.event === 'log') {
+
+                layer.msg("log", {
+                    time: 2000, //20s后自动关闭
+                    btn: ['关闭']
+                });
+
+                //实现化WebSocket对象
+                //指定要连接的服务器地址与端口建立连接
+                //注意ws、wss使用不同的端口。我使用自签名的证书测试，
+                //无法使用wss，浏览器打开WebSocket时报错
+                //ws对应http、wss对应https。
+                socket = new WebSocket("ws://localhost:8777/logs/" + data.recordId);
+                //连接打开事件
+                socket.onopen = function() {
+                    console.log("Socket 已打开");
+                    socket.send("消息发送测试(From Client)");
+                };
+                //收到消息事件
+                socket.onmessage = function(msg) {
+                    console.log(msg);
+                };
+                //连接关闭事件
+                socket.onclose = function() {
+                    console.log("Socket已关闭");
+                };
+                //发生了错误事件
+                socket.onerror = function() {
+                    alert("Socket发生了错误");
+                }
+
+                //窗口关闭时，关闭连接
+                window.unload=function() {
+                    socket.close();
+                };
+
             }
         });
     });

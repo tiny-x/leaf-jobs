@@ -12,6 +12,7 @@ import com.leaf.jobs.dao.model.TaskInvokeRecord;
 import com.leaf.jobs.enums.InvokeResult;
 import com.leaf.jobs.generate.SnowflakeIdWorker;
 import com.leaf.jobs.utils.StackTraceUtil;
+import com.leaf.remoting.api.exception.RemotingTimeoutException;
 import com.leaf.rpc.consumer.future.InvokeFutureContext;
 import com.leaf.rpc.consumer.future.InvokeFutureListener;
 import com.leaf.rpc.consumer.invoke.GenericInvoke;
@@ -61,6 +62,7 @@ public class RpcTimerJob implements Job {
         TaskInvokeRecord taskInvokeRecord = TaskInvokeRecord
                 .builder()
                 .recordId(SnowflakeIdWorker.getInstance().nextId())
+                .invokeResult(InvokeResult.INVOKING.getCode())
                 .taskId(task.getTaskId())
                 .invokeDate(new Date())
                 .build();
@@ -74,7 +76,6 @@ public class RpcTimerJob implements Job {
             logger.info("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
             invoke.$invoke(methodName, params);
             logger.info("任务执行成功，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
-
 
             InvokeFutureContext.getInvokeFuture().addListener(new InvokeFutureListener() {
                 @Override
@@ -99,7 +100,11 @@ public class RpcTimerJob implements Job {
                     if (errorMessage.length() > 512) {
                         errorMessage = errorMessage.substring(0, 512);
                     }
-                    taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_FAIL.getCode());
+                    if (throwable instanceof RemotingTimeoutException) {
+                        taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_TIME_OUT.getCode());
+                    } else {
+                        taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_FAIL.getCode());
+                    }
                     taskInvokeRecord.setStackTrace(errorMessage);
                     taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
                 }

@@ -20,10 +20,4 @@
     <artifactId>leaf-jobs-server</artifactId>
     <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.leaf.jobs</groupId>
-            <artifactId>leaf-jobs-common</artifactId>
-        </dependency>
-    </dependencies>
 </project>
