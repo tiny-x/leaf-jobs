@@ -1,6 +1,7 @@
 package com.leaf.jobs.support.log;
 
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.status.InfoStatus;
@@ -11,8 +12,13 @@ import com.leaf.jobs.constants.JobsConstants;
 import com.leaf.jobs.LogsProvider;
 import com.leaf.jobs.model.LogsDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
+import static com.leaf.jobs.constants.JobsConstants.LONGS_PATTERN;
 
+/**
+ * @author yefei
+ */
 @Slf4j
 public class RpcLoggerAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
@@ -24,14 +30,19 @@ public class RpcLoggerAppender extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     @Override
     protected void append(ILoggingEvent iLoggingEvent) {
-        String content = iLoggingEvent.getFormattedMessage();
         Preconditions.checkArgument(logsProvider !=  null, "logsProvider is null");
+
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(loggerContext);
+        encoder.setPattern(LONGS_PATTERN);
+        encoder.start();
+
+        String message = new String(encoder.encode(iLoggingEvent));
+
         logsProvider.transfer(new LogsDTO()
                 .setRecordId(Long.valueOf(RpcContext.getAttachment(JobsConstants.RECORD_ID_ATTACH_KEY)))
-                .setContent(content)
-                .setLevel(iLoggingEvent.getLevel().toString())
-                .setLogName(iLoggingEvent.getLoggerName())
-                .setThreadName(iLoggingEvent.getThreadName())
+                .setContent(message)
                 .setStackTraceElements(iLoggingEvent.getCallerData())
         );
     }

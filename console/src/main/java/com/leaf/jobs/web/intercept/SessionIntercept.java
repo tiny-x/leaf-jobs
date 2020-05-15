@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * @author yefei
  * session
  */
 public class SessionIntercept implements HandlerInterceptor {

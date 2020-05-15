@@ -2,6 +2,7 @@ package com.leaf.jobs.dao.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.leaf.jobs.enums.TaskType;
 import com.leaf.jobs.model.PageQuery;
 import lombok.*;
 
@@ -55,6 +56,16 @@ public class Task extends PageQuery implements Serializable {
      * 运行状态
      */
     private String taskStatus;
+
+    /**
+     * 任务类型
+     */
+    private String taskType;
+
+    /**
+     * 任务脚本
+     */
+    private String taskScript;
 
     /**
      * 超时时间（毫秒）

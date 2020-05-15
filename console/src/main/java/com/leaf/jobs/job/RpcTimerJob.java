@@ -3,6 +3,7 @@ package com.leaf.jobs.job;
 import com.google.common.base.Strings;
 import com.leaf.common.context.RpcContext;
 import com.leaf.common.model.ServiceMeta;
+import com.leaf.jobs.ScriptInvokeService;
 import com.leaf.jobs.constants.JobsConstants;
 import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskInvokeRecordMapper;
@@ -10,7 +11,9 @@ import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
 import com.leaf.jobs.dao.model.TaskInvokeRecord;
 import com.leaf.jobs.enums.InvokeResult;
+import com.leaf.jobs.enums.TaskType;
 import com.leaf.jobs.generate.SnowflakeIdWorker;
+import com.leaf.jobs.model.Invocation;
 import com.leaf.jobs.utils.StackTraceUtil;
 import com.leaf.remoting.api.exception.RemotingTimeoutException;
 import com.leaf.rpc.consumer.future.InvokeFutureContext;
@@ -69,8 +72,63 @@ public class RpcTimerJob implements Job {
         taskInvokeRecordMapper.insertSelective(taskInvokeRecord);
 
         RpcContext.putAttachment(JobsConstants.RECORD_ID_ATTACH_KEY, String.valueOf(taskInvokeRecord.getRecordId()));
+        String taskType = task.getTaskType();
+        TaskType match = TaskType.match(taskType);
+        switch (match) {
+            case SERVICE:
+                serviceTask(task, methodName, serviceMeta, invoke, params, taskInvokeRecordMapper, taskInvokeRecord);
+                break;
+            case GROOVY:
+            case SHELL:
+                ScriptInvokeService scriptInvokeService = JobsContext.getApplicationContext().getBean(ScriptInvokeService.class);
+                Invocation invocation = new Invocation();
+                invocation.setRecordId(taskInvokeRecord.getRecordId());
+                invocation.setTaskTye(match.name());
+                invocation.setScript(task.getTaskScript());
 
+                RpcContext.setTimeout(task.getTimeOut());
+                scriptInvokeService.invoke(invocation);
+
+                InvokeFutureContext.getInvokeFuture().addListener(new InvokeFutureListener() {
+                    @Override
+                    public void complete(Object o) {
+                        logger.info("任务调度成功，serviceMeta: {}, method: {}",
+                                serviceMeta,
+                                methodName);
+                        taskInvokeRecord.setCompleteDate(new Date());
+                        taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_SUCCESS.getCode());
+
+                        taskInvokeRecord.setResponse(String.valueOf(o));
+                        taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
+                    }
+
+                    @Override
+                    public void failure(Throwable throwable) {
+                        logger.error("任务调度失败，serviceMeta: {}, method: {}",
+                                serviceMeta,
+                                methodName,
+                                throwable);
+                        String errorMessage = StackTraceUtil.stackTrace(throwable);
+                        if (errorMessage.length() > 512) {
+                            errorMessage = errorMessage.substring(0, 512);
+                        }
+                        if (throwable instanceof RemotingTimeoutException) {
+                            taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_TIME_OUT.getCode());
+                        } else {
+                            taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_FAIL.getCode());
+                        }
+                        taskInvokeRecord.setStackTrace(errorMessage);
+                        taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
+                    }
+                });
+                break;
+        }
+
+    }
+
+    private void serviceTask(Task task, String methodName, ServiceMeta serviceMeta, GenericInvoke invoke, String[] params, TaskInvokeRecordMapper taskInvokeRecordMapper, TaskInvokeRecord taskInvokeRecord) {
         try {
+
             checkNotNull(invoke, "任务调度失败 invoke is null, taskId: %s serviceMeat: %s", task.getTaskId(), serviceMeta);
 
             logger.info("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);

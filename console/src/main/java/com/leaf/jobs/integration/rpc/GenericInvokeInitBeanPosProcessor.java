@@ -4,6 +4,7 @@ import com.leaf.common.model.ServiceMeta;
 import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
+import com.leaf.jobs.enums.TaskType;
 import com.leaf.rpc.GenericProxyFactory;
 import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.InvokeType;
@@ -33,7 +34,10 @@ public class GenericInvokeInitBeanPosProcessor implements BeanPostProcessor {
         if (bean instanceof TaskMapper) {
             TaskMapper taskMapper = (TaskMapper) bean;
             List<Task> tasks = taskMapper.selectAll();
-            tasks.forEach(task -> initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut()));
+
+            tasks.stream()
+                    .filter(task ->  TaskType.SERVICE.name().equals(task.getTaskType()))
+                    .forEach(task -> initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut()));
         }
         return bean;
     }

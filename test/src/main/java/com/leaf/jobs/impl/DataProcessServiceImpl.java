@@ -16,7 +16,7 @@ public class DataProcessServiceImpl implements DataProcessService {
         log.info("--- data  process ---: {}", RpcContext.getAttachment(JobsConstants.RECORD_ID_ATTACH_KEY));
         for (int i = 0; i < 2000; i++) {
             Thread.sleep(50);
-            log.info("--- data  process ---: {}", RpcContext.getAttachment(JobsConstants.RECORD_ID_ATTACH_KEY));
+            log.info("--- data  process ---: {} , {}", RpcContext.getAttachment(JobsConstants.RECORD_ID_ATTACH_KEY), Math.random());
         }
     }
 }

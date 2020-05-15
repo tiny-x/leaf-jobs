@@ -16,13 +16,5 @@ public class LogsDTO {
 
     String content;
 
-    String level;
-
-    long timeStamp;
-
-    String logName;
-
-    String threadName;
-
     StackTraceElement[] stackTraceElements;
 }

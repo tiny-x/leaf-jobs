@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Invocation {
 
-    Long taskId;
-
     Long recordId;
 
     String taskTye;
@@ -22,6 +20,8 @@ public class Invocation {
     String script;
 
     String result;
+
+    String workPath;
 
     StackTraceElement[] stackTraceElements;
 }

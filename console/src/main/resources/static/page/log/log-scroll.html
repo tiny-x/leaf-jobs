@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>日志</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="layui-card-header">日志</div>
+<div id="show-log" class="layui-card-body layui-bg-black" style="overflow:auto; height: 800px;" >
+</div>
+
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['table', 'form', 'tableSelect', 'nicescroll'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$,
+            jQuery = layui.$;
+
+        socket = new WebSocket("ws://localhost:8777/logs/" + parent.data.recordId);
+        //连接打开事件
+        socket.onopen = function() {
+            console.log("Socket 已打开");
+            $("#show-log").niceScroll({
+                smoothscroll: true,
+                spacebarenabled: true,
+            });
+        };
+
+        //收到消息事件
+        socket.onmessage = function(msg) {
+            $("#show-log").html($("#show-log").html() + msg.data + '</br>');
+            console.log($("#show-log")[0].scrollHeight);
+            $("#show-log").getNiceScroll(0).doScrollTop($("#show-log")[0].scrollHeight);
+        };
+        //连接关闭事件
+        socket.onclose = function() {
+            console.log("Socket已关闭");
+        };
+        //发生了错误事件
+        socket.onerror = function() {
+            alert("Socket发生了错误");
+        }
+
+        //窗口关闭时，关闭连接
+        window.unload=function() {
+            socket.close();
+        };
+    });
+
+</script>
+</body>
+</html>

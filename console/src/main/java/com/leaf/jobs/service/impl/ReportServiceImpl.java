@@ -3,17 +3,20 @@ package com.leaf.jobs.service.impl;
 import com.leaf.jobs.dao.mapper.TaskInvokeRecordMapper;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.TaskInvokeRecord;
+import com.leaf.jobs.enums.InvokeResult;
 import com.leaf.jobs.model.Response;
 import com.leaf.jobs.model.StatsVo;
 import com.leaf.jobs.service.ReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,9 +30,8 @@ public class ReportServiceImpl implements ReportService {
     private TaskInvokeRecordMapper taskInvokeRecordMapper;
 
     /**
-     *  @Cacheable 不支持失效时间
-     *
      * @return
+     * @Cacheable 不支持失效时间
      */
     //@Cacheable(value = "statsVo")
     @Override
@@ -44,6 +46,19 @@ public class ReportServiceImpl implements ReportService {
                 .taskCount(taskCount)
                 .successPercent(BigDecimal.valueOf((count - errorCount) * 100 / count).setScale(2, RoundingMode.HALF_UP))
                 .build();
+
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Example example = new Example(TaskInvokeRecord.class);
+        example.and().andLike("invokeDate", simpleDateFormat.format(date) + "%");
+        int todayInvokeCount = taskInvokeRecordMapper.selectCountByExample(example);
+        statsVo.setTodayInvokeCount(todayInvokeCount);
+
+        example.and().andLike("invokeResult", InvokeResult.INVOKE_SUCCESS.getCode());
+        int todaySuccessCount = taskInvokeRecordMapper.selectCountByExample(example);
+        statsVo.setTodaySuccessCount(todaySuccessCount);
+
         return Response.ofSuccess(statsVo);
     }
 

@@ -1,6 +1,8 @@
 package com.leaf.jobs.auto.config;
 
 import com.leaf.jobs.LogsProvider;
+import com.leaf.jobs.ScriptInvokeService;
+import com.leaf.jobs.server.service.ScriptInvokeServiceImpl;
 import com.leaf.jobs.support.log.RpcLoggerAppender;
 import com.leaf.register.api.RegisterType;
 import com.leaf.rpc.DefaultProxyFactory;
@@ -8,11 +10,15 @@ import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.DefaultConsumer;
 import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.rpc.consumer.dispatcher.DispatchType;
+import com.leaf.rpc.local.ServiceRegistry;
+import com.leaf.rpc.local.ServiceWrapper;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static com.leaf.jobs.constants.JobsConstants.SCRIPT_SERVICE_GROUP;
 
 /**
  * @author yefei
@@ -31,6 +37,20 @@ public class JobsAutoConfiguration {
         providerFactoryBean.setRegisterType(RegisterType.ZOOKEEPER.name());
 
         return providerFactoryBean;
+    }
+
+    @Bean
+    public ScriptInvokeService scriptInvokeBean(ProviderFactoryBean providerFactoryBean) {
+        ScriptInvokeService scriptInvokeService = new ScriptInvokeServiceImpl();
+        ServiceRegistry serviceRegistry = providerFactoryBean.getProvider()
+                .serviceRegistry()
+                .provider(scriptInvokeService)
+                .group(SCRIPT_SERVICE_GROUP)
+                .interfaceClass(ScriptInvokeService.class);
+
+        ServiceWrapper serviceWrapper = serviceRegistry.register();
+        providerFactoryBean.getProvider().publishService(serviceWrapper);
+        return scriptInvokeService;
     }
 
     @Bean

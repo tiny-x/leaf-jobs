@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/public.css" media="all">
 </head>
 <body>
-<div class="layuimini-container">
+<div class="layuimini-container"  style="zoom: 0.8;" >
     <div class="layuimini-main">
 
         <fieldset class="table-search-fieldset">
@@ -61,7 +61,6 @@
 
         <table class="layui-hide" id="task" lay-filter="currentTableFilter"></table>
 
-
     </div>
 </div>
 
@@ -101,12 +100,12 @@
             }],
             cols: [[
                 {type: "checkbox", fixed: "left"},
-                {field: 'taskId', title: '任务ID'},
-                {field: 'taskGroup', title: '任务组', sort: true, width: 80},
-                {field: 'taskServiceName', title: '服务名称', width: 150},
-                {field: 'taskMethodName', title: '方法名称', width: 80},
-                {field: 'taskName', title: '任务名称'},
-                {field: 'cron', title: 'CRON'},
+                {field: 'taskId', title: '任务ID', width: 180},
+                {field: 'taskGroup', title: '任务组', sort: true, width: 100},
+                {field: 'taskServiceName', title: '服务名称', width: 300},
+                {field: 'taskMethodName', title: '方法名称', width: 100},
+                {field: 'taskName', title: '任务名称', width: 180},
+                {field: 'cron', title: 'CRON', width: 180},
                 {
                     field: 'taskStatus', title: '任务状态', width: 100,
                     templet: function (data) {
@@ -114,9 +113,9 @@
                     }
                 },
                 {field: 'timeOut', title: '超时时间', width: 100},
-                {field: 'onlineAddress', title: '在线机器'},
+                {field: 'onlineAddress', title: '在线机器', width: 200},
                 {
-                    title: '操作', fixed: "right", minWidth: 250,
+                    title: '操作', fixed: "right", minWidth: 300,
                     templet: function (data) {
                         var opt = '<span>' +
                             '<input type="checkbox" name="run-switch" lay-skin="switch" lay-filter="run-switch" lay-text="运行|暂停" data-field-taskId="' + data.taskId + '" data-field-group="' + data.taskGroup + '">' +
@@ -220,9 +219,10 @@
             console.log(obj)
         });
 
+        data = {};
         table.on('tool(currentTableFilter)', function (obj) {
             console.log(obj);
-            var data = obj.data;
+            data = obj.data;
             if (obj.event === 'edit') {
 
                 var index = layer.open({
@@ -287,7 +287,19 @@
                     layer.close(index);
                 });
             } else if (obj.event === 'log') {
-                layer.msg('未开发', {time: 3000, btn: ['关闭']});
+                var index = layer.open({
+                    title: '执行记录',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/page/task-invoke-record.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
             }
         });
 

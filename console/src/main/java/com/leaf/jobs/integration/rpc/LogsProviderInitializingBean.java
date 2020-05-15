@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author yefei
  */
 @Component
-public class LogsProviderInit implements InitializingBean {
+public class LogsProviderInitializingBean implements InitializingBean {
 
     @Value("${leaf.jobs.registerAddress}")
     private String registerAddress;

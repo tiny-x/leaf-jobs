@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 /**
  * 任务类型
+ * @author yefei
  */
 public enum TaskType {
 
@@ -11,11 +12,9 @@ public enum TaskType {
     SHELL,
     GROOVY;
 
-    private String code;
-
     public static TaskType match(String code) {
         return Arrays.asList(TaskType.values()).stream()
-                .filter(taskType -> taskType.code.equals(code))
+                .filter(taskType -> taskType.name().equals(code))
                 .findFirst()
                 .orElse(null);
     }

@@ -1,13 +1,14 @@
 package com.leaf.jobs;
 
 import com.leaf.common.annotation.ServiceInterface;
+import com.leaf.jobs.constants.JobsConstants;
 import com.leaf.jobs.model.LogsDTO;
 
 /**
  * 日志通过rpc传输过来
  * @author yefei
  */
-@ServiceInterface(group = "jobs-log")
+@ServiceInterface(group = JobsConstants.LONGS_SERVICE_GROUP)
 public interface LogsProvider {
 
     /**

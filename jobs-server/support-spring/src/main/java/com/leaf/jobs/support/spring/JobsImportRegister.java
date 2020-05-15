@@ -12,6 +12,9 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import java.util.Set;
 
+/**
+ * @author yefei
+ */
 public class JobsImportRegister implements ImportBeanDefinitionRegistrar {
 
     @Override

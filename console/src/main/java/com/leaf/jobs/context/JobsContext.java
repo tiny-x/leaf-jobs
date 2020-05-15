@@ -2,6 +2,7 @@ package com.leaf.jobs.context;
 
 import com.google.common.base.Strings;
 import com.leaf.common.concurrent.ConcurrentSet;
+import com.leaf.common.utils.Collections;
 import com.leaf.common.utils.Maps;
 import com.leaf.jobs.model.RegisterServiceVo;
 import com.leaf.register.api.model.RegisterMeta;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
@@ -60,28 +62,37 @@ public class JobsContext implements ApplicationContextAware {
 
     public static Set<RegisterServiceVo> getRegisterServiceVo(String group, String serviceName) {
         Set<RegisterServiceVo> set = new HashSet<>();
-        if (Strings.isNullOrEmpty(group)) {
+        if (!Strings.isNullOrEmpty(group)) {
+
+            if (Collections.isEmpty(GROUP_MAP.get(group))) {
+                return set;
+            }
+
             GROUP_MAP.get(group).stream()
-                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()) : true)
-                    .forEach(registerMeta -> Arrays.stream(registerMeta.getMethods()).forEach(method -> {
-                                set.add(RegisterServiceVo.builder()
-                                        .group(registerMeta.getServiceMeta().getGroup())
-                                        .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
-                                        .method(method)
-                                        .build());
-                            }
-                    ));
+                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? true : serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()))
+                    .forEach(registerMeta -> Optional
+                            .ofNullable(registerMeta.getMethods())
+                            .ifPresent(o -> Arrays
+                                    .stream(o)
+                                    .forEach(method -> set.add(RegisterServiceVo.builder()
+                                            .group(registerMeta.getServiceMeta().getGroup())
+                                            .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
+                                            .method(method)
+                                            .build()))
+                            ));
         } else {
             GROUP_MAP.forEach((s, registerMetas) -> registerMetas.stream()
-                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()) : true)
-                    .forEach(registerMeta -> Arrays.stream(registerMeta.getMethods()).forEach(method -> {
-                        set.add(RegisterServiceVo.builder()
-                                .group(registerMeta.getServiceMeta().getGroup())
-                                .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
-                                .method(method)
-                                .build());
-                            }
-                    )));
+                    .filter(registerMeta -> Strings.isNullOrEmpty(serviceName) ? true : serviceName.equals(registerMeta.getServiceMeta().getServiceProviderName()))
+                    .forEach(registerMeta -> Optional
+                            .ofNullable(registerMeta.getMethods())
+                            .ifPresent(o -> Arrays
+                                    .stream(o)
+                                    .forEach(method -> set.add(RegisterServiceVo.builder()
+                                            .group(registerMeta.getServiceMeta().getGroup())
+                                            .serviceName(registerMeta.getServiceMeta().getServiceProviderName())
+                                            .method(method)
+                                            .build()))
+                            )));
         }
         return set;
     }

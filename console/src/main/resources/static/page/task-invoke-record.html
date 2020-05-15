@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/public.css" media="all">
 </head>
 <body>
-<div class="layuimini-container">
+<div class="layuimini-container" style="zoom: 0.8;">
     <div class="layuimini-main">
 
         <fieldset class="table-search-fieldset">
@@ -101,22 +101,25 @@
             }],
             cols: [[
                 {type: "space", fixed: "left", field: 'recordId', hide: true},
-                {field: 'taskId', title: '任务ID'},
-                {field: 'taskGroup', title: '任务组', sort: true, width: 80},
-                {field: 'taskServiceName', title: '服务名称', width: 150},
-                {field: 'taskMethodName', title: '方法名称', width: 80},
-                {field: 'taskName', title: '任务名称'},
-                {field: 'invokeDate', title: '调度时间'},
-                {field: 'completeDate', title: '完成时间'},
-                {field: 'invokeResult', title: '执行结果'},
+                {field: 'taskId', title: '任务ID',width: 180},
+                {field: 'taskGroup', title: '任务组', sort: true, width: 120},
+                {field: 'taskServiceName', title: '服务名称', width: 300},
+                {field: 'taskMethodName', title: '方法名称', width: 150},
+                {field: 'taskName', title: '任务名称', width: 120},
+                {field: 'invokeDate', title: '调度时间', width: 250},
+                {field: 'completeDate', title: '完成时间', width: 250},
+                {field: 'invokeResult', title: '执行结果', width: 100},
                 {
-                    title: '操作', fixed: "right", width: 120,
+                    title: '操作', fixed: "right", width: 140,
                     templet: function (data) {
                         return '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="detail">详情</a></span>' +
                         '<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="log">日志</a></span>';
                     }
                 }
             ]],
+            where: {
+                taskId: parent.data == undefined ? "" : parent.data.taskId,
+            },
             limits: [10, 20, 50, 100],
             limit: 10,
             page: true
@@ -124,13 +127,13 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-
             //执行搜索重载
             table.reload('taskInvokeRecord', {
                 page: {
                     curr: 1
                 }
                 , where: {
+                    taskId: parent.data.taskId,
                     taskGroup: data.field.taskGroup,
                     taskServiceName: data.field.taskServiceName,
                     taskName: data.field.taskName,
@@ -146,51 +149,30 @@
             console.log(obj)
         });
 
+        data = {};
         table.on('tool(currentTableFilter)', function (obj) {
             console.log(obj);
-            var data = obj.data;
-            if (obj.event === 'detail') {
+            data = obj.data;
 
+            if (obj.event === 'detail') {
                 layer.msg("detail", {
                     time: 2000, //20s后自动关闭
                     btn: ['关闭']
                 });
             } else if (obj.event === 'log') {
-
-                layer.msg("log", {
-                    time: 2000, //20s后自动关闭
-                    btn: ['关闭']
+                var index = layer.open({
+                    title: '查看日志',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/page/log/log-scroll.html',
                 });
-
-                //实现化WebSocket对象
-                //指定要连接的服务器地址与端口建立连接
-                //注意ws、wss使用不同的端口。我使用自签名的证书测试，
-                //无法使用wss，浏览器打开WebSocket时报错
-                //ws对应http、wss对应https。
-                socket = new WebSocket("ws://localhost:8777/logs/" + data.recordId);
-                //连接打开事件
-                socket.onopen = function() {
-                    console.log("Socket 已打开");
-                    socket.send("消息发送测试(From Client)");
-                };
-                //收到消息事件
-                socket.onmessage = function(msg) {
-                    console.log(msg);
-                };
-                //连接关闭事件
-                socket.onclose = function() {
-                    console.log("Socket已关闭");
-                };
-                //发生了错误事件
-                socket.onerror = function() {
-                    alert("Socket发生了错误");
-                }
-
-                //窗口关闭时，关闭连接
-                window.unload=function() {
-                    socket.close();
-                };
-
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
             }
         });
     });

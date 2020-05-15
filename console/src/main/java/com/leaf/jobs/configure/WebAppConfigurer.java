@@ -33,7 +33,8 @@ public class WebAppConfigurer implements WebMvcConfigurer {
                         "/images/**",
                         "/js/**",
                         "/lib/**",
-                        "/page/**");
+                        "/page/**",
+                        "/logs/**");
     }
 
 }

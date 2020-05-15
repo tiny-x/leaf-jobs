@@ -18,6 +18,9 @@
         inner join t_task b
         on a.TASK_ID = b.TASK_ID
         <where>
+            <if test="taskId != null">
+                and b.TASK_ID = #{taskId}
+            </if>
             <if test="taskGroup != '' and taskGroup != null">
                 and b.TASK_GROUP = #{taskGroup}
             </if>
@@ -34,20 +37,21 @@
                 and a.INVOKE_RESULT = #{invokeResult}
             </if>
         </where>
+        order by a.INVOKE_DATE desc
     </select>
 
     <select id="dayOfInvokeCount" resultType="com.leaf.jobs.dao.model.TaskInvokeRecord">
-        select DATE(INVOKE_DATE)                                     invokeDate,
-               count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), null, 1)) successCount,
-               count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), 1, null)) errorCount,
-               count(*) `count`
+        select DATE(INVOKE_DATE) invokeDate,
+        count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), null, 1)) successCount,
+        count(IF(INVOKE_RESULT in ('调度失败', '执行失败'), 1, null)) errorCount,
+        count(*) `count`
         from t_task_invoke_record
         group by DATE(INVOKE_DATE);
     </select>
 
     <select id="selectErrorCount" resultType="int">
         select
-            count(*) `errorCount`
+        count(*) `errorCount`
         from t_task_invoke_record
         where INVOKE_RESULT in ('调度失败', '执行失败');
     </select>

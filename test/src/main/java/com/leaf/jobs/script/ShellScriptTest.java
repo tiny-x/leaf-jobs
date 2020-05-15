@@ -21,7 +21,7 @@ public class ShellScriptTest {
      * @return
      */
     public static List<String> runShell(String shStr, String[] envp, String workPath) {
-        List<String> strList = new ArrayList<String>();
+        List<String> strList = new ArrayList<>();
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",shStr}, null, new File(workPath));
             InputStreamReader ir = new InputStreamReader(process.getInputStream());
