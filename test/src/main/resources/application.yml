@@ -1,4 +1,4 @@
 #spring.profiles.active
 spring:
   profiles:
-    active: @env@
+    active: '@env@'

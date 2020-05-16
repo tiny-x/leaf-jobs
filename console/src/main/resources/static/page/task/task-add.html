@@ -12,10 +12,31 @@
         body {
             background-color: #ffffff;
         }
+
+
     </style>
 </head>
 <body>
 <div class="layui-form layuimini-form">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">任务类型</label>
+        <div class="layui-input-block">
+            <select name="taskType" autocomplete="off" class="layui-input" lay-filter="taskType">
+                <option value="SERVICE">服务</option>
+                <option value="SHELL">SHELL</option>
+                <option value="GROOVY">GROOVY</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="display:'none'">
+        <label class="layui-form-label required">脚本</label>
+        <div class="layui-input-block">
+            <textarea name="script" class="layui-textarea  layui-bg-black" ></textarea>
+        </div>
+    </div>
+
     <div class="layui-form-item">
         <label class="layui-form-label required">任务</label>
         <div class="layui-input-block">
@@ -57,7 +78,8 @@
     <div class="layui-form-item">
         <label class="layui-form-label required">负责人</label>
         <div class="layui-input-block">
-            <input type="text" name="principal" lay-verify="required" value="" class="layui-input" id="userSearch" readonly>
+            <input type="text" name="principal" lay-verify="required" value="" class="layui-input" id="userSearch"
+                   readonly>
         </div>
     </div>
 
@@ -89,6 +111,12 @@
             layer = layui.layer,
             $ = layui.$,
             tableSelect = layui.tableSelect;
+
+        form.on('select(taskType)', function(data){
+            var val=data.value;
+            console.log(val);
+        });
+
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
@@ -185,6 +213,8 @@
             }
         })
     });
+
+
 </script>
 </body>
 </html>

@@ -1,3 +1,2 @@
 # Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.leaf.jobs.auto.config.JobsAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.leaf.jobs.auto.config.JobsAutoConfiguration
