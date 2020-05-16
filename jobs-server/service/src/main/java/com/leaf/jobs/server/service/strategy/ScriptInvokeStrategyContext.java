@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author yefei
  */
-@Component
 public class ScriptInvokeStrategyContext implements BeanPostProcessor, ScriptInvokeService {
 
     private Map<TaskType, ScriptInvokeStrategy> strategies = new ConcurrentHashMap<>();

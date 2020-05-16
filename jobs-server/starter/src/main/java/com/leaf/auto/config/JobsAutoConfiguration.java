@@ -1,8 +1,11 @@
-package com.leaf.jobs.auto.config;
+package com.leaf.auto.config;
 
 import com.leaf.jobs.LogsProvider;
 import com.leaf.jobs.ScriptInvokeService;
 import com.leaf.jobs.server.service.ScriptInvokeServiceImpl;
+import com.leaf.jobs.server.service.strategy.GroovyScriptInvokeStrategy;
+import com.leaf.jobs.server.service.strategy.ScriptInvokeStrategyContext;
+import com.leaf.jobs.server.service.strategy.ShellScriptInvokeStrategy;
 import com.leaf.jobs.support.log.RpcLoggerAppender;
 import com.leaf.register.api.RegisterType;
 import com.leaf.rpc.DefaultProxyFactory;
@@ -59,7 +62,7 @@ public class JobsAutoConfiguration {
         consumer.connectToRegistryServer(jobsProperties.getRegisterAddress());
 
         // 广播日志
-        LogsProvider logsProvider  = DefaultProxyFactory.factory(LogsProvider.class)
+        LogsProvider logsProvider = DefaultProxyFactory.factory(LogsProvider.class)
                 .consumer(consumer)
                 .timeMillis(3000L)
                 .invokeType(InvokeType.ASYNC)
@@ -70,4 +73,21 @@ public class JobsAutoConfiguration {
         return logsProvider;
     }
 
+    @Bean
+    public ScriptInvokeStrategyContext scriptInvokeStrategyContext()  {
+        ScriptInvokeStrategyContext scriptInvokeStrategyContext = new ScriptInvokeStrategyContext();
+        return scriptInvokeStrategyContext;
+    }
+
+    @Bean
+    public GroovyScriptInvokeStrategy groovyScriptInvokeStrategy() {
+        GroovyScriptInvokeStrategy groovyScriptInvokeStrategy = new GroovyScriptInvokeStrategy();
+        return groovyScriptInvokeStrategy;
+    }
+
+    @Bean
+    public ShellScriptInvokeStrategy shellScriptInvokeStrategy() {
+        ShellScriptInvokeStrategy shellScriptInvokeStrategy = new ShellScriptInvokeStrategy();
+        return shellScriptInvokeStrategy;
+    }
 }

@@ -9,7 +9,6 @@
     </parent>
 
     <modules>
-        <module>auto-config</module>
         <module>starter</module>
         <module>support-spring</module>
         <module>service</module>

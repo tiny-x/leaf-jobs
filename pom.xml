@@ -54,19 +54,13 @@
 
             <dependency>
                 <groupId>com.leaf.jobs</groupId>
-                <artifactId>leaf-jobs-auto-config</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.leaf.jobs</groupId>
                 <artifactId>leaf-jobs-support-spring</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.leaf.jobs</groupId>
-                <artifactId>leaf-jobs-starter</artifactId>
+                <artifactId>jobs-spring-boot-starter</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 

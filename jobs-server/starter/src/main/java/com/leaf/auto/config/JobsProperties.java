@@ -1,4 +1,4 @@
-package com.leaf.jobs.auto.config;
+package com.leaf.auto.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
