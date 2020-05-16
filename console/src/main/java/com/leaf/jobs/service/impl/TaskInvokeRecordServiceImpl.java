@@ -23,7 +23,7 @@ public class TaskInvokeRecordServiceImpl implements TaskInvokeRecordService {
     private TaskInvokeRecordMapper taskInvokeRecordMapper;
 
     @Override
-    public Response<TaskInvokeRecord> selectInvokeRecord(TaskInvokeRecord taskInvokeRecord) {
+    public Response<List<TaskInvokeRecord>> selectInvokeRecord(TaskInvokeRecord taskInvokeRecord) {
 
         Page page= PageHelper.startPage(taskInvokeRecord.getPage(), taskInvokeRecord.getLimit());
         List<TaskInvokeRecord> taskInvokeRecords = taskInvokeRecordMapper.selectTaskInvokeRecord(taskInvokeRecord);
@@ -31,5 +31,11 @@ public class TaskInvokeRecordServiceImpl implements TaskInvokeRecordService {
         Response response = Response.ofSuccess(taskInvokeRecords);
         response.setCount(page.getTotal());
         return response;
+    }
+
+    @Override
+    public Response<TaskInvokeRecord> selectInvokeRecordDetail(TaskInvokeRecord taskInvokeRecord) {
+        TaskInvokeRecord taskInvoke = taskInvokeRecordMapper.selectByPrimaryKey(taskInvokeRecord.getRecordId());
+        return Response.ofSuccess(taskInvoke);
     }
 }

@@ -16,12 +16,12 @@ import com.leaf.rpc.consumer.dispatcher.DispatchType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static com.leaf.jobs.constants.JobsConstants.SCRIPT_SERVICE_GROUP;
 
 /**
  * @author yefei
@@ -43,12 +43,12 @@ public class JobsAutoConfiguration {
     }
 
     @Bean
-    public ScriptInvokeService scriptInvokeBean(ProviderFactoryBean providerFactoryBean) {
+    public ScriptInvokeService scriptInvokeBean(ProviderFactoryBean providerFactoryBean, JobsProperties jobsProperties) {
         ScriptInvokeService scriptInvokeService = new ScriptInvokeServiceImpl();
         ServiceRegistry serviceRegistry = providerFactoryBean.getProvider()
                 .serviceRegistry()
                 .provider(scriptInvokeService)
-                .group(SCRIPT_SERVICE_GROUP)
+                .group(jobsProperties.getSystemName())
                 .interfaceClass(ScriptInvokeService.class);
 
         ServiceWrapper serviceWrapper = serviceRegistry.register();
@@ -73,18 +73,21 @@ public class JobsAutoConfiguration {
         return logsProvider;
     }
 
+    @ConditionalOnProperty(prefix = "leaf.jobs", name = "script", havingValue = "true")
     @Bean
     public ScriptInvokeStrategyContext scriptInvokeStrategyContext()  {
         ScriptInvokeStrategyContext scriptInvokeStrategyContext = new ScriptInvokeStrategyContext();
         return scriptInvokeStrategyContext;
     }
 
+    @ConditionalOnBean(ScriptInvokeStrategyContext.class)
     @Bean
     public GroovyScriptInvokeStrategy groovyScriptInvokeStrategy() {
         GroovyScriptInvokeStrategy groovyScriptInvokeStrategy = new GroovyScriptInvokeStrategy();
         return groovyScriptInvokeStrategy;
     }
 
+    @ConditionalOnBean(ScriptInvokeStrategyContext.class)
     @Bean
     public ShellScriptInvokeStrategy shellScriptInvokeStrategy() {
         ShellScriptInvokeStrategy shellScriptInvokeStrategy = new ShellScriptInvokeStrategy();

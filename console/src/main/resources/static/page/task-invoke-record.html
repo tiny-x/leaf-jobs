@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>任务管理</title>
+    <title>执行记录</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -16,7 +16,7 @@
         <fieldset class="table-search-fieldset">
             <legend>搜索信息</legend>
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" >
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">任务组</label>
@@ -50,7 +50,8 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
                             </button>
                             <button type="reset" class="layui-btn layui-btn-primary"><i class="layui-icon"></i> 清 空
                             </button>
@@ -133,7 +134,7 @@
                     curr: 1
                 }
                 , where: {
-                    taskId: parent.data.taskId,
+                    taskId: parent.data == undefined ? "" : parent.data.taskId,
                     taskGroup: data.field.taskGroup,
                     taskServiceName: data.field.taskServiceName,
                     taskName: data.field.taskName,
@@ -144,21 +145,40 @@
             return false;
         });
 
-        //监听表格复选框选择
-        table.on('checkbox(currentTableFilter)', function (obj) {
-            console.log(obj)
-        });
-
-        data = {};
         table.on('tool(currentTableFilter)', function (obj) {
             console.log(obj);
-            data = obj.data;
+            var data = obj.data;
 
             if (obj.event === 'detail') {
-                layer.msg("detail", {
-                    time: 2000, //20s后自动关闭
-                    btn: ['关闭']
+                $.ajax({
+                    url: '/invokeRecord/selectInvokeRecordDetail',
+                    type: 'post',
+                    data: {
+                        "recordId": data.recordId,
+                    },
+                    success: function (ret) {
+                        if (ret.code == 0) {
+                            layer.open({
+                                type: 1
+                                ,offset: 'auto'
+                                ,id: data.recordId //防止重复弹出
+                                ,content: '<div class="layui-card-body layui-bg-black">' + ret.data.response + '</div>'
+                                ,btn: '关闭'
+                                ,btnAlign: 'c' //按钮居中
+                                ,shade: 0 //不显示遮罩
+                                ,yes: function(){
+                                    layer.closeAll();
+                                }
+                            });
+                        } else {
+                            layer.msg(ret.msg, {time: 3000, btn: ['关闭']});
+                        }
+                    },
+                    error: function (xhr, textstatus, thrown) {
+                        layer.msg('selectInvokeRecord  error!');
+                    }
                 });
+
             } else if (obj.event === 'log') {
                 var index = layer.open({
                     title: '查看日志',

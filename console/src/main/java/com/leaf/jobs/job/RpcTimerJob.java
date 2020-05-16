@@ -3,7 +3,6 @@ package com.leaf.jobs.job;
 import com.google.common.base.Strings;
 import com.leaf.common.context.RpcContext;
 import com.leaf.common.model.ServiceMeta;
-import com.leaf.jobs.ScriptInvokeService;
 import com.leaf.jobs.constants.JobsConstants;
 import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskInvokeRecordMapper;
@@ -56,11 +55,6 @@ public class RpcTimerJob implements Job {
 
         GenericInvoke invoke = JobsContext.getInvoke(task.getTaskId());
 
-        String[] params = null;
-
-        if (!Strings.isNullOrEmpty(task.getParams())) {
-            params = task.getParams().split(",");
-        }
         TaskInvokeRecordMapper taskInvokeRecordMapper = JobsContext.getApplicationContext().getBean(TaskInvokeRecordMapper.class);
         TaskInvokeRecord taskInvokeRecord = TaskInvokeRecord
                 .builder()
@@ -76,57 +70,27 @@ public class RpcTimerJob implements Job {
         TaskType match = TaskType.match(taskType);
         switch (match) {
             case SERVICE:
-                serviceTask(task, methodName, serviceMeta, invoke, params, taskInvokeRecordMapper, taskInvokeRecord);
+                String[] params = null;
+
+                if (!Strings.isNullOrEmpty(task.getParams())) {
+                    params = task.getParams().split(",");
+                }
+                serviceTask(task, methodName, serviceMeta, invoke, taskInvokeRecordMapper, taskInvokeRecord, params);
                 break;
             case GROOVY:
             case SHELL:
-                ScriptInvokeService scriptInvokeService = JobsContext.getApplicationContext().getBean(ScriptInvokeService.class);
                 Invocation invocation = new Invocation();
                 invocation.setRecordId(taskInvokeRecord.getRecordId());
                 invocation.setTaskTye(match.name());
                 invocation.setScript(task.getTaskScript());
-
                 RpcContext.setTimeout(task.getTimeOut());
-                scriptInvokeService.invoke(invocation);
-
-                InvokeFutureContext.getInvokeFuture().addListener(new InvokeFutureListener() {
-                    @Override
-                    public void complete(Object o) {
-                        logger.info("任务调度成功，serviceMeta: {}, method: {}",
-                                serviceMeta,
-                                methodName);
-                        taskInvokeRecord.setCompleteDate(new Date());
-                        taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_SUCCESS.getCode());
-
-                        taskInvokeRecord.setResponse(String.valueOf(o));
-                        taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
-                    }
-
-                    @Override
-                    public void failure(Throwable throwable) {
-                        logger.error("任务调度失败，serviceMeta: {}, method: {}",
-                                serviceMeta,
-                                methodName,
-                                throwable);
-                        String errorMessage = StackTraceUtil.stackTrace(throwable);
-                        if (errorMessage.length() > 512) {
-                            errorMessage = errorMessage.substring(0, 512);
-                        }
-                        if (throwable instanceof RemotingTimeoutException) {
-                            taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_TIME_OUT.getCode());
-                        } else {
-                            taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_FAIL.getCode());
-                        }
-                        taskInvokeRecord.setStackTrace(errorMessage);
-                        taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
-                    }
-                });
+                serviceTask(task, methodName, serviceMeta, invoke, taskInvokeRecordMapper, taskInvokeRecord, invocation);
                 break;
         }
 
     }
 
-    private void serviceTask(Task task, String methodName, ServiceMeta serviceMeta, GenericInvoke invoke, String[] params, TaskInvokeRecordMapper taskInvokeRecordMapper, TaskInvokeRecord taskInvokeRecord) {
+    private void serviceTask(Task task, String methodName, ServiceMeta serviceMeta, GenericInvoke invoke, TaskInvokeRecordMapper taskInvokeRecordMapper, TaskInvokeRecord taskInvokeRecord, Object... params) {
         try {
 
             checkNotNull(invoke, "任务调度失败 invoke is null, taskId: %s serviceMeat: %s", task.getTaskId(), serviceMeta);

@@ -35,9 +35,7 @@ public class GenericInvokeInitBeanPosProcessor implements BeanPostProcessor {
             TaskMapper taskMapper = (TaskMapper) bean;
             List<Task> tasks = taskMapper.selectAll();
 
-            tasks.stream()
-                    .filter(task ->  TaskType.SERVICE.name().equals(task.getTaskType()))
-                    .forEach(task -> initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut()));
+            tasks.forEach(task -> initInvoke(task.getTaskId(), task.getTaskGroup(), task.getTaskServiceName(), task.getTimeOut()));
         }
         return bean;
     }

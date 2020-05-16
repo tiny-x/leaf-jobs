@@ -12,8 +12,6 @@ public class JobsConstants {
 
     public final static String RPC_LOG_APPENDER_NAME = "LOG_RPC";
 
-    public final static String SCRIPT_SERVICE_GROUP = "jobs-script";
-
     public final static String LONGS_SERVICE_GROUP = "jobs-logs";
 
     public final static String LONGS_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS}, %green(%-5level), %red([%thread]) %boldMagenta(%logger{72}) - %msg%n";

@@ -60,6 +60,8 @@ public class JobsServiceImpl implements JobsService {
                 .taskServiceName(jobVo.getServiceName())
                 .taskMethodName(jobVo.getMethodName())
                 .taskName(jobVo.getTaskName())
+                .taskType(jobVo.getTaskType())
+                .taskScript(jobVo.getTaskScript())
                 .taskStatus(JobStatus.RUN.name())
                 .params(jobVo.getParams())
                 .cron(jobVo.getCron())

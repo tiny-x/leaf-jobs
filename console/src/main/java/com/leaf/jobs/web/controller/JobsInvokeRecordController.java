@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author yefei
  */
@@ -20,9 +22,14 @@ public class JobsInvokeRecordController {
     private TaskInvokeRecordService taskInvokeRecordService;
 
     @RequestMapping("/selectInvokeRecord")
-    public Response<TaskInvokeRecord> selectInvokeRecord(TaskInvokeRecord taskInvokeRecord) {
-        Response<TaskInvokeRecord> taskInvokeRecordResponse = taskInvokeRecordService.selectInvokeRecord(taskInvokeRecord);
+    public Response<List<TaskInvokeRecord>> selectInvokeRecord(TaskInvokeRecord taskInvokeRecord) {
+        Response<List<TaskInvokeRecord>> taskInvokeRecordResponse = taskInvokeRecordService.selectInvokeRecord(taskInvokeRecord);
         return taskInvokeRecordResponse;
     }
 
+    @RequestMapping("/selectInvokeRecordDetail")
+    public Response<TaskInvokeRecord> selectInvokeRecordDetail(TaskInvokeRecord taskInvokeRecord) {
+        Response<TaskInvokeRecord> taskInvokeRecordResponse = taskInvokeRecordService.selectInvokeRecordDetail(taskInvokeRecord);
+        return taskInvokeRecordResponse;
+    }
 }

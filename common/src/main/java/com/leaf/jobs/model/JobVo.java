@@ -41,6 +41,16 @@ public class JobVo {
     private String taskName;
 
     /**
+     * 任务类型
+     */
+    private String taskType;
+
+    /**
+     * 脚本
+     */
+    private String taskScript;
+
+    /**
      * 参数
      */
     private String params;

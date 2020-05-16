@@ -6,7 +6,6 @@ import com.leaf.jobs.model.Invocation;
 import com.leaf.jobs.server.service.Strategy;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

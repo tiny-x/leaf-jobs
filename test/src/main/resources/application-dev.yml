@@ -3,3 +3,4 @@ leaf:
       registerAddress: 121.43.175.216:2181
       systemName: rjb
       port: 9000
+      script: true

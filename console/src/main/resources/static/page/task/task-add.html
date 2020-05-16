@@ -30,10 +30,10 @@
         </div>
     </div>
 
-    <div class="layui-form-item" style="display:'none'">
+    <div id="script" class="layui-form-item" style="display:none">
         <label class="layui-form-label required">脚本</label>
         <div class="layui-input-block">
-            <textarea name="script" class="layui-textarea  layui-bg-black" ></textarea>
+            <textarea name="taskScript" class="layui-textarea  layui-bg-black"></textarea>
         </div>
     </div>
 
@@ -112,11 +112,14 @@
             $ = layui.$,
             tableSelect = layui.tableSelect;
 
-        form.on('select(taskType)', function(data){
-            var val=data.value;
-            console.log(val);
+        form.on('select(taskType)', function (data) {
+            console.log(data.value);
+            if(data.value != 'SERVICE') {
+                $("#script").show();
+            } else {
+                $("#script").hide();
+            }
         });
-
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
@@ -130,6 +133,8 @@
                     "methodName": data.field.methodName,
                     "params": data.field.params,
                     "taskName": data.field.taskName,
+                    "taskType": data.field.taskType,
+                    "taskScript": data.field.taskScript,
                     "cron": data.field.cron,
                     "timeMillis": data.field.timeMillis,
                     "riskEMail": data.field.riskEMail,
