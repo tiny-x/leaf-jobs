@@ -1,7 +1,7 @@
 package com.leaf.jobs.job;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Strings;
 import com.leaf.common.context.RpcContext;
 import com.leaf.common.model.ServiceMeta;
@@ -23,6 +23,7 @@ import com.leaf.rpc.consumer.invoke.GenericInvoke;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 
+import java.io.IOException;
 import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -57,7 +58,16 @@ public class RpcTimerJob implements Job {
             case SERVICE:
                 String[] params = null;
                 if (!Strings.isNullOrEmpty(task.getParams())) {
-                    params = task.getParams().split(",");
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        JsonNode jsonNode = mapper.readTree(task.getParams());
+                        params = new String[jsonNode.size()];
+                        for (int i = 0; i < jsonNode.size(); i++) {
+                            params[i] = jsonNode.get(i).toString();
+                        }
+                    } catch (IOException e) {
+                        // 参数解析异常
+                    }
                 }
                 serviceTask(task, serviceMeta, params);
                 break;

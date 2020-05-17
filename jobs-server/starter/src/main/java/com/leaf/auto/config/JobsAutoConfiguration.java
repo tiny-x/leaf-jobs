@@ -30,6 +30,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+
 /**
  * @author yefei
  */
@@ -56,9 +59,34 @@ public class JobsAutoConfiguration {
                 .group(jobsProperties.getSystemName())
                 .interfaceClass(ScriptInvokeService.class);
         provider.addRequestProcessFilter(new RequestProcessFilter() {
+
+            ObjectMapper mapper = new ObjectMapper();
+
             @Override
             public void filter(RequestWrapper requestWrapper, ServiceWrapper serviceWrapper) {
+                Object[] args = requestWrapper.getArgs();
+                if (serviceWrapper.getServiceProvider() instanceof ScriptInvokeService || args == null) {
+                    return;
+                }
 
+                Method[] methods = serviceWrapper.getServiceProvider().getClass().getMethods();
+                String methodName = requestWrapper.getMethodName();
+                for (Method method : methods) {
+                    Class<?>[] parameterTypes = method.getParameterTypes();
+                    if (args.length != parameterTypes.length && method.getName().equals(methodName)) {
+                        for (int i = 0; i < args.length; i++) {
+                            if (parameterTypes[i] == String.class) {
+                                continue;
+                            }
+                            try {
+                                Object o = mapper.readValue((String) (args[i]), parameterTypes[i]);
+                                args[i] = o;
+                            } catch (IOException e) {
+                                //ignore
+                            }
+                        }
+                    }
+                }
             }
 
             @Override

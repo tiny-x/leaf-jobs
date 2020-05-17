@@ -2,7 +2,10 @@ package com.leaf.jobs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.leaf.jobs.model.User;
+
+import java.util.List;
 
 public class JacksonTest {
 
@@ -16,9 +19,15 @@ public class JacksonTest {
             String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
             System.out.println(jsonString);
+            TypeFactory typeFactory = mapper.getTypeFactory();
+            List<String> a = mapper.readValue("[\"a\", \"B\"]", typeFactory.constructCollectionType(List.class, String.class));
+            System.out.println(a);
 
+            String xx = "\"a\"";
+            String s = mapper.readValue(xx, String.class);
+            System.out.println(s);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 }
