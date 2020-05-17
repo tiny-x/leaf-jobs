@@ -1,5 +1,7 @@
 package com.leaf.jobs.job;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Strings;
 import com.leaf.common.context.RpcContext;
 import com.leaf.common.model.ServiceMeta;
@@ -18,9 +20,8 @@ import com.leaf.remoting.api.exception.RemotingTimeoutException;
 import com.leaf.rpc.consumer.future.InvokeFutureContext;
 import com.leaf.rpc.consumer.future.InvokeFutureListener;
 import com.leaf.rpc.consumer.invoke.GenericInvoke;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -32,10 +33,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author yefei
  */
+@Slf4j
 @DisallowConcurrentExecution
 public class RpcTimerJob implements Job {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcTimerJob.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @param context
@@ -47,14 +49,31 @@ public class RpcTimerJob implements Job {
 
         TaskMapper taskMapper = JobsContext.getApplicationContext().getBean(TaskMapper.class);
         Task task = taskMapper.selectByPrimaryKey(key.getName());
+        String taskType = task.getTaskType();
+        TaskType match = TaskType.match(taskType);
 
-        String serviceName = task.getTaskServiceName();
-        String methodName = task.getTaskMethodName();
+        ServiceMeta serviceMeta = new ServiceMeta(task.getTaskGroup(), task.getTaskServiceName());
+        switch (match) {
+            case SERVICE:
+                String[] params = null;
+                if (!Strings.isNullOrEmpty(task.getParams())) {
+                    params = task.getParams().split(",");
+                }
+                serviceTask(task, serviceMeta, params);
+                break;
+            case GROOVY:
+            case SHELL:
+                Invocation invocation = new Invocation();
+                invocation.setTaskTye(match.name());
+                invocation.setScript(task.getTaskScript());
+                RpcContext.setTimeout(task.getTimeOut());
+                serviceTask(task, serviceMeta, invocation);
+                break;
+        }
 
-        ServiceMeta serviceMeta = new ServiceMeta(task.getTaskGroup(), serviceName);
+    }
 
-        GenericInvoke invoke = JobsContext.getInvoke(task.getTaskId());
-
+    private void serviceTask(Task task, ServiceMeta serviceMeta, Object... params) {
         TaskInvokeRecordMapper taskInvokeRecordMapper = JobsContext.getApplicationContext().getBean(TaskInvokeRecordMapper.class);
         TaskInvokeRecord taskInvokeRecord = TaskInvokeRecord
                 .builder()
@@ -63,60 +82,34 @@ public class RpcTimerJob implements Job {
                 .taskId(task.getTaskId())
                 .invokeDate(new Date())
                 .build();
-        taskInvokeRecordMapper.insertSelective(taskInvokeRecord);
-
-        RpcContext.putAttachment(JobsConstants.RECORD_ID_ATTACH_KEY, String.valueOf(taskInvokeRecord.getRecordId()));
-        String taskType = task.getTaskType();
-        TaskType match = TaskType.match(taskType);
-        switch (match) {
-            case SERVICE:
-                String[] params = null;
-
-                if (!Strings.isNullOrEmpty(task.getParams())) {
-                    params = task.getParams().split(",");
-                }
-                serviceTask(task, methodName, serviceMeta, invoke, taskInvokeRecordMapper, taskInvokeRecord, params);
-                break;
-            case GROOVY:
-            case SHELL:
-                Invocation invocation = new Invocation();
-                invocation.setRecordId(taskInvokeRecord.getRecordId());
-                invocation.setTaskTye(match.name());
-                invocation.setScript(task.getTaskScript());
-                RpcContext.setTimeout(task.getTimeOut());
-                serviceTask(task, methodName, serviceMeta, invoke, taskInvokeRecordMapper, taskInvokeRecord, invocation);
-                break;
-        }
-
-    }
-
-    private void serviceTask(Task task, String methodName, ServiceMeta serviceMeta, GenericInvoke invoke, TaskInvokeRecordMapper taskInvokeRecordMapper, TaskInvokeRecord taskInvokeRecord, Object... params) {
         try {
+            taskInvokeRecordMapper.insertSelective(taskInvokeRecord);
+            RpcContext.putAttachment(JobsConstants.RECORD_ID_ATTACH_KEY, String.valueOf(taskInvokeRecord.getRecordId()));
 
+            GenericInvoke invoke = JobsContext.getInvoke(task.getTaskId());
             checkNotNull(invoke, "任务调度失败 invoke is null, taskId: %s serviceMeat: %s", task.getTaskId(), serviceMeta);
 
-            logger.info("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
-            invoke.$invoke(methodName, params);
-            logger.info("任务执行成功，serviceMeta: {}, method: {}, params: {}", serviceMeta, methodName, params);
+            log.info("执行任务，serviceMeta: {}, method: {}, params: {}", serviceMeta, task.getTaskMethodName(), params);
+            invoke.$invoke(task.getTaskMethodName(), params);
+            log.info("任务执行成功，serviceMeta: {}, method: {}, params: {}", serviceMeta, task.getTaskMethodName(), params);
 
             InvokeFutureContext.getInvokeFuture().addListener(new InvokeFutureListener() {
                 @Override
                 public void complete(Object o) {
-                    logger.info("任务调度成功，serviceMeta: {}, method: {}",
+                    log.info("任务调度成功，serviceMeta: {}, method: {}",
                             serviceMeta,
-                            methodName);
+                            task.getTaskMethodName());
                     taskInvokeRecord.setCompleteDate(new Date());
                     taskInvokeRecord.setInvokeResult(InvokeResult.INVOKE_SUCCESS.getCode());
-
-                    taskInvokeRecord.setResponse(String.valueOf(o));
+                    taskInvokeRecord.setResponse(o.toString());
                     taskInvokeRecordMapper.updateByPrimaryKeySelective(taskInvokeRecord);
                 }
 
                 @Override
                 public void failure(Throwable throwable) {
-                    logger.error("任务调度失败，serviceMeta: {}, method: {}",
+                    log.error("任务调度失败，serviceMeta: {}, method: {}",
                             serviceMeta,
-                            methodName,
+                            task.getTaskMethodName(),
                             throwable);
                     String errorMessage = StackTraceUtil.stackTrace(throwable);
                     if (errorMessage.length() > 512) {
@@ -132,9 +125,9 @@ public class RpcTimerJob implements Job {
                 }
             });
         } catch (Throwable throwable) {
-            logger.error("任务调度失败，serviceMeta: {}, method: {}, params: {}",
+            log.error("任务调度失败，serviceMeta: {}, method: {}, params: {}",
                     serviceMeta,
-                    methodName,
+                    task.getTaskMethodName(),
                     params,
                     throwable);
             String errorMessage = StackTraceUtil.stackTrace(throwable);

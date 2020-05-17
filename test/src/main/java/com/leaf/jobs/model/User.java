@@ -1,4 +1,4 @@
-package com.leaf.jobs;
+package com.leaf.jobs.model;
 
 import lombok.Data;
 
@@ -8,5 +8,7 @@ public class User {
     private String name;
 
     private String age;
+
+    private String profile;
 
 }

@@ -3,7 +3,7 @@ package com.leaf.jobs.integration.rpc;
 import com.leaf.register.api.RegisterType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
-import com.leaf.rpc.provider.DefaultProvider;
+import com.leaf.rpc.provider.DefaultLeafServer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class LogsProviderInitializingBean implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        DefaultProvider provider = new DefaultProvider(11222, RegisterType.ZOOKEEPER);
+        DefaultLeafServer provider = new DefaultLeafServer(11222, RegisterType.ZOOKEEPER);
         provider.connectToRegistryServer(registerAddress);
         provider.start();
 

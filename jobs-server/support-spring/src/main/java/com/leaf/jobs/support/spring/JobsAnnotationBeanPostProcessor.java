@@ -6,9 +6,10 @@ import com.leaf.jobs.support.JobsProvider;
 import com.leaf.jobs.support.log.RpcLoggerAppender;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
-import com.leaf.spring.init.bean.ProviderFactoryBean;
+import com.leaf.rpc.provider.LeafServer;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -18,6 +19,9 @@ import org.springframework.context.ApplicationContextAware;
  * @author yefei
  */
 public class JobsAnnotationBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
+
+    @Value("${leaf.jobs.systemName}")
+    private String systemName;
 
     private ApplicationContext applicationContext;
 
@@ -33,18 +37,18 @@ public class JobsAnnotationBeanPostProcessor implements BeanPostProcessor, Appli
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             RpcLoggerAppender.configure(loggerContext, bean.getClass());
 
-            ProviderFactoryBean providerFactoryBean = applicationContext.getBean(ProviderFactoryBean.class);
+            LeafServer server = applicationContext.getBean(LeafServer.class);
 
-            ServiceRegistry serviceRegistry = providerFactoryBean.getProvider()
+            ServiceRegistry serviceRegistry = server
                     .serviceRegistry()
                     .provider(bean)
-                    .group(Strings.isNullOrEmpty(annotation.group()) ? providerFactoryBean.getGroup() : annotation.group())
+                    .group(Strings.isNullOrEmpty(annotation.group()) ? systemName : annotation.group())
                     .interfaceClass(bean.getClass().getInterfaces()[0])
                     .weight(annotation.weight())
                     .providerName(annotation.serviceProviderName());
 
             ServiceWrapper serviceWrapper = serviceRegistry.register();
-            providerFactoryBean.getProvider().publishService(serviceWrapper);
+            server.publishService(serviceWrapper);
         }
         return bean;
     }

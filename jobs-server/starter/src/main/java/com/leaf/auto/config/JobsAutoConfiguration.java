@@ -1,5 +1,6 @@
 package com.leaf.auto.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leaf.jobs.LogsProvider;
 import com.leaf.jobs.ScriptInvokeService;
 import com.leaf.jobs.server.service.ScriptInvokeServiceImpl;
@@ -15,7 +16,13 @@ import com.leaf.rpc.consumer.InvokeType;
 import com.leaf.rpc.consumer.dispatcher.DispatchType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
+import com.leaf.rpc.provider.DefaultLeafServer;
+import com.leaf.rpc.provider.LeafServer;
+import com.leaf.rpc.provider.process.RequestProcessFilter;
+import com.leaf.rpc.provider.process.RequestWrapper;
+import com.leaf.rpc.provider.process.ResponseWrapper;
 import com.leaf.spring.init.bean.ProviderFactoryBean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,33 +33,49 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author yefei
  */
+@Slf4j
 @Configuration
 @ConditionalOnClass({ProviderFactoryBean.class})
 @EnableConfigurationProperties({JobsProperties.class})
 public class JobsAutoConfiguration {
 
     @Bean
-    public ProviderFactoryBean providerFactoryBean(JobsProperties jobsProperties) {
-        ProviderFactoryBean providerFactoryBean = new ProviderFactoryBean();
-        providerFactoryBean.setGroup(jobsProperties.getSystemName());
-        providerFactoryBean.setPort(jobsProperties.getPort());
-        providerFactoryBean.setRegistryServer(jobsProperties.getRegisterAddress());
-        providerFactoryBean.setRegisterType(RegisterType.ZOOKEEPER.name());
-
-        return providerFactoryBean;
+    public LeafServer providerFactoryBean(JobsProperties jobsProperties) {
+        LeafServer provider = new DefaultLeafServer(jobsProperties.getPort(), RegisterType.ZOOKEEPER);
+        provider.connectToRegistryServer(jobsProperties.getRegisterAddress());
+        provider.start();
+        return provider;
     }
 
     @Bean
-    public ScriptInvokeService scriptInvokeBean(ProviderFactoryBean providerFactoryBean, JobsProperties jobsProperties) {
+    public ScriptInvokeService scriptInvokeBean(LeafServer provider, JobsProperties jobsProperties) {
         ScriptInvokeService scriptInvokeService = new ScriptInvokeServiceImpl();
-        ServiceRegistry serviceRegistry = providerFactoryBean.getProvider()
+        ServiceRegistry serviceRegistry = provider
                 .serviceRegistry()
                 .provider(scriptInvokeService)
                 .group(jobsProperties.getSystemName())
                 .interfaceClass(ScriptInvokeService.class);
+        provider.addRequestProcessFilter(new RequestProcessFilter() {
+            @Override
+            public void filter(RequestWrapper requestWrapper, ServiceWrapper serviceWrapper) {
 
+            }
+
+            @Override
+            public void filter(ResponseWrapper responseWrapper) {
+                ObjectMapper mapper = new ObjectMapper();
+                String s;
+                try {
+                    s = mapper.writeValueAsString(responseWrapper.getResult());
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    s = e.getMessage();
+                }
+                responseWrapper.setResult(s);
+            }
+        });
         ServiceWrapper serviceWrapper = serviceRegistry.register();
-        providerFactoryBean.getProvider().publishService(serviceWrapper);
+        provider.publishService(serviceWrapper);
         return scriptInvokeService;
     }
 
@@ -75,7 +98,7 @@ public class JobsAutoConfiguration {
 
     @ConditionalOnProperty(prefix = "leaf.jobs", name = "script", havingValue = "true")
     @Bean
-    public ScriptInvokeStrategyContext scriptInvokeStrategyContext()  {
+    public ScriptInvokeStrategyContext scriptInvokeStrategyContext() {
         ScriptInvokeStrategyContext scriptInvokeStrategyContext = new ScriptInvokeStrategyContext();
         return scriptInvokeStrategyContext;
     }
