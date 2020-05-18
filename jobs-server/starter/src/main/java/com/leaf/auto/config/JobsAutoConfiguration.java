@@ -69,22 +69,23 @@ public class JobsAutoConfiguration {
                     return;
                 }
 
-                Method[] methods = serviceWrapper.getServiceProvider().getClass().getMethods();
+                Method[] methods = serviceWrapper.getServiceProvider().getClass().getDeclaredMethods();
                 String methodName = requestWrapper.getMethodName();
                 for (Method method : methods) {
                     Class<?>[] parameterTypes = method.getParameterTypes();
-                    if (args.length != parameterTypes.length && method.getName().equals(methodName)) {
+                    if (args.length == parameterTypes.length && method.getName().equals(methodName)) {
+                        Object[] argsParse = new Object[args.length];
                         for (int i = 0; i < args.length; i++) {
-                            if (parameterTypes[i] == String.class) {
-                                continue;
-                            }
                             try {
                                 Object o = mapper.readValue((String) (args[i]), parameterTypes[i]);
-                                args[i] = o;
+                                argsParse[i] = o;
                             } catch (IOException e) {
                                 //ignore
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
                             }
                         }
+                        requestWrapper.setArgs(argsParse);
                     }
                 }
             }

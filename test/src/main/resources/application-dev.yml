@@ -1,3 +1,11 @@
+logging:
+  config: classpath:logback-spring.xml
+  dir: /tmp/logs/leaf-jobs
+  level:
+    root: info
+    com.leaf: debug
+    org.springframework: info
+
 leaf:
     jobs:
       registerAddress: 121.43.175.216:2181

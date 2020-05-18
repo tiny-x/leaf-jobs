@@ -5,20 +5,16 @@ import com.leaf.jobs.model.User;
 import com.leaf.jobs.support.JobsProvider;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Random;
-
 @JobsProvider(group = "rjb")
 @Slf4j
 public class HelloServiceImpl implements HelloService {
 
     @Override
-    public User sayHello(String name) {
-        log.info("hi service" + name);
-        User user = new User();
-        user.setName(name);
-        user.setAge(String.valueOf(new Random().nextInt()));
-        user.setProfile("i'm king");
-        return user;
+    public User sayHello(User user1, User user2) {
+        log.info("hi user1, " + user1.getName());
+        log.info("hi user2, " + user2.getName());
+        user1.setProfile("i'm king");
+        return user1;
     }
 
     @Override

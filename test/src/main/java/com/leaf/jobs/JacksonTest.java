@@ -16,7 +16,8 @@ public class JacksonTest {
             User user = new User();
             user.setProfile("xx");
             user.setName("yefei");
-            String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
+            user.setAge("11");
+            String jsonString = mapper.writeValueAsString(user);
             mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
             System.out.println(jsonString);
             TypeFactory typeFactory = mapper.getTypeFactory();
