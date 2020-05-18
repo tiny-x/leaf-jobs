@@ -1,15 +1,15 @@
 # leaf-jobs
-#### 集群任务调度中心
+#### 一个简单的任务调度中心
+
 - rpc模块                 netty
 - quartz-support模块      quartz集群模式
-- core模块                核心逻辑，springboot控制台     
-- spi模块                 服务端需要依赖
+- console模块             springboot控制台     
+- jobs-starter模块        服务端需要依赖
 - test模块                spi的test模块
                   
-
 #### 数据库脚本
-leaf-jobs/db/customer.sql
-leaf-jobs/db/tables_mysql_innodb.sql
+- leaf-jobs/db/customer.sql
+- leaf-jobs/db/tables_mysql_innodb.sql
 
 #### 服务端配置
 可参考test模块
@@ -18,7 +18,8 @@ leaf-jobs/db/tables_mysql_innodb.sql
 ````xml
     <dependency>
         <groupId>com.leaf.jobs</groupId>
-        <artifactId>leaf-jobs-spi</artifactId>
+        <artifactId>jobs-spring-boot-starter</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </dependency>
 ````
 
@@ -64,16 +65,16 @@ public class HelloServiceImpl implements HelloService {
           registerAddress: 172.16.2.203:2181
           systemName: rjb
           port: 9000
+          script: true //支持推送shell脚本等执行
 ````
 
 #### 调度中心控制台
 启动 com.leaf.jobs.JobsApplication 即可
 
 #### 后续
-- 日志回显
-- 脚本 shell groovy 执行
+- 日志回显优化
+- 脚本 groovy 执行
 - 子任务
-- no channel bug
 
 
 
