@@ -145,9 +145,10 @@
             return false;
         });
 
+        data = {};
         table.on('tool(currentTableFilter)', function (obj) {
             console.log(obj);
-            var data = obj.data;
+            data = obj.data;
 
             if (obj.event === 'detail') {
                 $.ajax({
