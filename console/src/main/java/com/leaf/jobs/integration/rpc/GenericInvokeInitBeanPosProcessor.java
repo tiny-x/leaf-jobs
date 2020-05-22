@@ -4,10 +4,9 @@ import com.leaf.common.model.ServiceMeta;
 import com.leaf.jobs.context.JobsContext;
 import com.leaf.jobs.dao.mapper.TaskMapper;
 import com.leaf.jobs.dao.model.Task;
-import com.leaf.jobs.enums.TaskType;
 import com.leaf.rpc.GenericProxyFactory;
-import com.leaf.rpc.consumer.Consumer;
 import com.leaf.rpc.consumer.InvokeType;
+import com.leaf.rpc.consumer.LeafClient;
 import com.leaf.rpc.consumer.invoke.GenericInvoke;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -27,7 +26,7 @@ import java.util.List;
 public class GenericInvokeInitBeanPosProcessor implements BeanPostProcessor {
 
     @Autowired
-    private Consumer consumer;
+    private LeafClient client;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -43,7 +42,7 @@ public class GenericInvokeInitBeanPosProcessor implements BeanPostProcessor {
     public void initInvoke(Long taskId, String group, String serviceName, Long timeMills) {
         ServiceMeta serviceMeta = new ServiceMeta(group, serviceName);
         GenericInvoke genericInvoke = GenericProxyFactory.factory()
-                .consumer(consumer)
+                .consumer(client)
                 .directory(serviceMeta)
                 .timeMillis(timeMills)
                 .invokeType(InvokeType.ASYNC)

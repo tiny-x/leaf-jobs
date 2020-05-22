@@ -10,9 +10,9 @@ import com.leaf.jobs.server.service.strategy.ShellScriptInvokeStrategy;
 import com.leaf.jobs.support.log.RpcLoggerAppender;
 import com.leaf.register.api.RegisterType;
 import com.leaf.rpc.DefaultProxyFactory;
-import com.leaf.rpc.consumer.Consumer;
-import com.leaf.rpc.consumer.DefaultConsumer;
+import com.leaf.rpc.consumer.DefaultLeafClient;
 import com.leaf.rpc.consumer.InvokeType;
+import com.leaf.rpc.consumer.LeafClient;
 import com.leaf.rpc.consumer.dispatcher.DispatchType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
@@ -110,12 +110,12 @@ public class JobsAutoConfiguration {
 
     @Bean
     public LogsProvider consumerFactory(JobsProperties jobsProperties) {
-        Consumer consumer = new DefaultConsumer(jobsProperties.getRegisterAddress(), RegisterType.ZOOKEEPER);
-        consumer.connectToRegistryServer(jobsProperties.getRegisterAddress());
+        LeafClient client = new DefaultLeafClient(jobsProperties.getRegisterAddress(), RegisterType.ZOOKEEPER);
+        client.connectToRegistryServer(jobsProperties.getRegisterAddress());
 
         // 广播日志
         LogsProvider logsProvider = DefaultProxyFactory.factory(LogsProvider.class)
-                .consumer(consumer)
+                .consumer(client)
                 .timeMillis(3000L)
                 .invokeType(InvokeType.ASYNC)
                 .dispatchType(DispatchType.BROADCAST)
