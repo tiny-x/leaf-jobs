@@ -16,7 +16,6 @@ import com.leaf.rpc.consumer.LeafClient;
 import com.leaf.rpc.consumer.dispatcher.DispatchType;
 import com.leaf.rpc.local.ServiceRegistry;
 import com.leaf.rpc.local.ServiceWrapper;
-import com.leaf.rpc.provider.DefaultLeafServer;
 import com.leaf.rpc.provider.LeafServer;
 import com.leaf.rpc.provider.process.RequestProcessFilter;
 import com.leaf.rpc.provider.process.RequestWrapper;
@@ -43,11 +42,12 @@ import java.lang.reflect.Method;
 public class JobsAutoConfiguration {
 
     @Bean
-    public LeafServer providerFactoryBean(JobsProperties jobsProperties) {
-        LeafServer provider = new DefaultLeafServer(jobsProperties.getPort(), RegisterType.ZOOKEEPER);
-        provider.connectToRegistryServer(jobsProperties.getRegisterAddress());
-        provider.start();
-        return provider;
+    public ProviderFactoryBean providerFactoryBean(JobsProperties jobsProperties) {
+        ProviderFactoryBean providerFactoryBean = new ProviderFactoryBean();
+        providerFactoryBean.setPort(jobsProperties.getPort());
+        providerFactoryBean.setRegisterType(RegisterType.ZOOKEEPER.name());
+        providerFactoryBean.setRegistryServer(jobsProperties.getRegisterAddress());
+        return providerFactoryBean;
     }
 
     @Bean

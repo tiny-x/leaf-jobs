@@ -11,6 +11,7 @@ import com.leaf.register.api.model.RegisterMeta;
 import com.leaf.register.api.model.SubscribeMeta;
 import com.leaf.rpc.consumer.DefaultLeafClient;
 import com.leaf.rpc.consumer.LeafClient;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ConsumerFactoryBean implements FactoryBean<LeafClient>, InitializingBean {
+public class ConsumerFactoryBean implements FactoryBean<LeafClient>, InitializingBean, DisposableBean {
 
     private LeafClient client;
 
@@ -31,7 +32,7 @@ public class ConsumerFactoryBean implements FactoryBean<LeafClient>, Initializin
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        LeafClient client = new DefaultLeafClient(application, RegisterType.ZOOKEEPER);
+        this.client = new DefaultLeafClient(application, RegisterType.ZOOKEEPER);
         client.connectToRegistryServer(registerAddress);
         RegisterService registerService = client.registerService();
         List<ServiceMeta> serviceMetas = registerService.lookup();
@@ -53,7 +54,11 @@ public class ConsumerFactoryBean implements FactoryBean<LeafClient>, Initializin
                 });
             }
         }
-        this.client = client;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        this.client.shutdown();
     }
 
     @Override
